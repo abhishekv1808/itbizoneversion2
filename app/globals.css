@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+
+@theme {
+  /* ── Breakpoints ───────────────────────────────────────────────
+     Overridden to match the design's cutoffs. Tailwind is mobile-first,
+     so the spec's "< 810px" rules are the base layer, and md/lg add on. */
+  --breakpoint-md: 810px;
+  --breakpoint-lg: 1200px;
+
+  /* ── Palette ─────────────────────────────────────────────────── */
+  --color-bg: #ffffff;
+  --color-ink: #0a0a0a;
+  --color-muted: #6b6b6b;
+  --color-soft: rgba(0, 0, 0, 0.08);
+  --color-green: #17c964;
+
+  --color-chip: rgb(251, 251, 251); /* ticker pill background */
+  --color-hairline: rgb(248, 248, 248); /* book button border */
+  --color-quiet: rgb(152, 152, 152); /* book button sub-label */
+  --color-dot: rgb(29, 204, 93); /* availability dot */
+  --color-line: #fcfaf8; /* curved line stroke */
+  --color-panel: rgb(250, 250, 250); /* alternating section ground */
+
+  /* ── Typefaces (values injected by next/font in app/layout.js) ── */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, serif;
+  --font-cursive: var(--font-cedarville), cursive;
+}
+
+/* Edge-fade for the marquees — two properties, so it earns a utility
+   rather than a pair of arbitrary values repeated at each call site. */
+@utility edge-fade {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    black 12%,
+    black 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    black 12%,
+    black 88%,
+    transparent 100%
+  );
+}
+
+/* Bottom-of-hero progressive blur: the blur is masked so it ramps in
+   rather than switching on, and the gradient carries it to solid white. */
+@utility progressive-blur {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgb(255, 255, 255) 100%
+  );
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 55%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 55%);
+}

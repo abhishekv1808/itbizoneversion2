@@ -1,0 +1,112 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronUp } from 'lucide-react'
+
+const LINKS = [
+  { label: 'Projects', href: '#services' },
+  { label: 'Plans', href: '#services' },
+  { label: 'Team', href: '#team' },
+  { label: 'FAQs', href: '#awards' },
+  { label: 'Get in Touch', href: '#contact' },
+]
+
+const overlay = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { duration: 0.4, ease: 'easeOut', staggerChildren: 0.05 },
+  },
+  exit: { opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } },
+}
+
+const linkItem = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, y: 12, transition: { duration: 0.2 } },
+}
+
+export default function Navbar() {
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-100">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-[19px] md:px-8 lg:px-9">
+          <a
+            href="#"
+            className="font-serif text-[30px] leading-none font-semibold tracking-[-0.08em] italic"
+          >
+            Alwayzz
+            <span className="ml-0.5 align-super font-sans text-sm font-semibold tracking-normal not-italic">
+              &reg;
+            </span>
+          </a>
+
+          <motion.button
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            whileHover={{ y: -1, boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-white"
+          >
+            Menu
+            <motion.span
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="inline-flex"
+            >
+              <ChevronUp size={16} />
+            </motion.span>
+          </motion.button>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            variants={overlay}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className="fixed inset-0 z-99 flex flex-col bg-bg"
+          >
+            <nav className="flex flex-1 flex-col items-center justify-center gap-1">
+              {LINKS.map((link) => (
+                <motion.a
+                  key={link.label}
+                  href={link.href}
+                  variants={linkItem}
+                  onClick={() => setOpen(false)}
+                  className="text-[32px] leading-[1.25] font-medium tracking-[-0.04em] transition-opacity duration-200 hover:opacity-45 lg:text-[40px] xl:text-[48px]"
+                >
+                  {link.label}
+                </motion.a>
+              ))}
+            </nav>
+
+            <div className="border-t border-soft px-5 py-6 text-center text-[13px] text-muted md:px-9 md:py-7">
+              &copy; {new Date().getFullYear()}{' '}
+              Alwayzz&reg; &mdash; All rights reserved.
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
