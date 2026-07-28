@@ -6,42 +6,44 @@ import Section from '@/components/ui/Section'
 import Reveal, { RevealGroup, revealItem } from '@/components/ui/Reveal'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 
+// The four headline services carried over from itbizone.com, plus the two
+// lines the v1 pricing engine already quoted separately.
 const SERVICES = [
   {
     id: '01',
-    title: 'Brand Identity',
-    copy: 'Naming, marks, type systems and the guidelines that keep them intact once the team grows.',
-    tags: ['Positioning', 'Identity', 'Guidelines'],
+    title: 'Website Development',
+    copy: 'Custom sites and web applications — built responsive, fast, and structured so search engines can actually read them.',
+    tags: ['Custom builds', 'CMS', 'Web apps'],
   },
   {
     id: '02',
-    title: 'Product Design',
-    copy: 'End-to-end interface work — flows, design systems, and the unglamorous states most decks skip.',
-    tags: ['UX', 'Design systems', 'Prototyping'],
+    title: 'UI/UX Design',
+    copy: 'Research, flows and interface design that decide what the product does before anyone argues about what it looks like.',
+    tags: ['User flows', 'Wireframes', 'Prototypes'],
   },
   {
     id: '03',
-    title: 'App Development',
-    copy: 'Production front-ends in React and Next.js, built to the same tolerance as the design files.',
-    tags: ['Next.js', 'React', 'Headless CMS'],
+    title: 'Digital Marketing',
+    copy: 'SEO, Google Ads and paid social run against tracked numbers — leads and conversions, not impressions.',
+    tags: ['SEO', 'Google Ads', 'PPC'],
   },
   {
     id: '04',
-    title: 'Creative Video',
-    copy: 'Launch films, product walkthroughs and social cutdowns, directed and edited in-house.',
-    tags: ['Direction', 'Edit', 'Sound'],
+    title: 'Graphic Design',
+    copy: 'Logos, brand identity, print and packaging, with the guidelines that keep it all consistent once your team grows.',
+    tags: ['Identity', 'Print', 'Packaging'],
   },
   {
     id: '05',
-    title: 'Iconography',
-    copy: 'Drawn-to-grid icon sets and pictograms that hold up at 16px and on a billboard.',
-    tags: ['Icon sets', 'Pictograms', 'Grids'],
+    title: 'Social Media Management',
+    copy: 'Strategy, content calendars and community management, reported monthly against growth and engagement.',
+    tags: ['Content', 'Campaigns', 'Reporting'],
   },
   {
     id: '06',
-    title: 'Motion & 3D',
-    copy: 'WebGL scenes, interface motion and rendered assets that stay light enough to ship.',
-    tags: ['WebGL', 'UI motion', 'Render'],
+    title: 'E-commerce Development',
+    copy: 'Storefronts with payment gateways, inventory and analytics wired in — from first catalogue to checkout.',
+    tags: ['Storefronts', 'Payments', 'Inventory'],
   },
 ]
 
@@ -52,14 +54,14 @@ export default function Services() {
         <Reveal className="max-w-[620px]">
           <Eyebrow>What we do</Eyebrow>
           <SectionTitle className="mt-7">
-            Six disciplines, <Accent>one</Accent> team.
+            Six services, <Accent>one</Accent> team.
           </SectionTitle>
         </Reveal>
 
         <Reveal delay={0.1} className="max-w-[380px]">
           <Lede>
-            Engage one discipline or the whole stack. Most partners start with a
-            single track and widen once the cadence clicks.
+            Take one service or the whole stack. Most clients start with a
+            website and widen once they see the first month of numbers.
           </Lede>
         </Reveal>
       </div>

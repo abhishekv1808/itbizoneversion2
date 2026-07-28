@@ -1,18 +1,18 @@
 'use client'
 
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import HeroCanvas from './HeroCanvas'
 import CurvedLines from './CurvedLines'
 import Marquee from './Marquee'
-import { BOOK_AVATAR } from '@/lib/assets'
+import BookCall from './ui/BookCall'
+import { SITE } from '@/lib/site'
 
 const TICKER_ITEMS = [
-  'Brand Identity',
-  'App Development',
-  'Visual Design',
-  'Creative Video',
-  'Iconography',
+  'Website Development',
+  'UI/UX Design',
+  'Digital Marketing',
+  'Graphic Design',
+  'Social Media',
 ]
 
 const container = {
@@ -66,64 +66,38 @@ export default function Hero() {
 
         <motion.h1
           variants={rise}
-          className="mb-5 max-w-[550px] text-[clamp(44px,13vw,52px)] leading-[1.03] font-semibold tracking-[-0.07em] md:text-[clamp(60px,8vw,72px)] lg:text-[82px]"
+          className="mb-5 max-w-[560px] text-[clamp(44px,13vw,52px)] leading-[1.03] font-semibold tracking-[-0.07em] md:text-[clamp(60px,8vw,72px)] lg:text-[82px]"
         >
-          Premium creative{' '}
+          Everything digital, under{' '}
           <span className="font-serif font-semibold italic tracking-[-0.08em]">
-            alwayzz
-          </span>
-          <sup className="align-super font-sans text-[24px] font-semibold tracking-normal">
-            &reg;
-          </sup>{' '}
-          on demand.
+            one
+          </span>{' '}
+          roof.
         </motion.h1>
 
         <motion.p
           variants={rise}
           className="max-w-[476px] text-[17px] leading-[1.45] font-normal text-muted"
         >
-          A flexible design partnership for founders, brands, and agencies who
-          want top craft delivered on their timeline.
+          {SITE.description}
         </motion.p>
 
         <motion.div
           variants={rise}
           className="mt-8 flex w-full max-w-[320px] flex-col items-center justify-center gap-4 md:w-auto md:max-w-none md:flex-row"
         >
-          <motion.button
+          <motion.a
+            href="#contact"
             variants={lift}
             initial="rest"
             whileHover="hover"
             whileTap="tap"
             className="inline-flex h-14 w-full items-center justify-center rounded-full bg-ink px-[30px] text-[15px] font-semibold text-white md:w-auto"
           >
-            View Plans
-          </motion.button>
+            Get a quotation
+          </motion.a>
 
-          <motion.button
-            variants={lift}
-            initial="rest"
-            whileHover="hover"
-            whileTap="tap"
-            className="inline-flex w-full items-center justify-start gap-3 rounded-full border-4 border-hairline bg-white py-2 pr-6 pl-2 md:w-auto"
-          >
-            <Image
-              src={BOOK_AVATAR}
-              alt=""
-              width={40}
-              height={40}
-              className="size-10 shrink-0 rounded-full object-cover"
-            />
-            <span className="flex flex-col items-start gap-0.5">
-              <span className="text-sm leading-tight font-semibold">
-                Chat for 15 minutes
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-xs leading-tight font-medium text-quiet">
-                <span className="size-2 shrink-0 rounded-full bg-dot" />
-                Pick a slot
-              </span>
-            </span>
-          </motion.button>
+          <BookCall />
         </motion.div>
       </motion.div>
 

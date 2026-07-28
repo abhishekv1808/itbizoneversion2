@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+/* Lenis' own rules: unpins html/body height, contains overscroll inside
+   [data-lenis-prevent] subtrees, and kills iframe pointer capture mid-scroll. */
+@import 'lenis/dist/lenis.css';
 
 @theme {
   /* ── Breakpoints ───────────────────────────────────────────────

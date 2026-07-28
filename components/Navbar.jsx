@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useLenis } from 'lenis/react'
 import { ChevronUp } from 'lucide-react'
+import { SITE } from '@/lib/site'
 
 const LINKS = [
-  { label: 'Projects', href: '#services' },
-  { label: 'Plans', href: '#services' },
-  { label: 'Team', href: '#team' },
-  { label: 'FAQs', href: '#awards' },
+  { label: 'Services', href: '#services' },
+  { label: 'Work', href: '#work' },
+  { label: 'Industries', href: '#industries' },
+  { label: 'About', href: '#about' },
+  { label: 'Why us', href: '#why' },
   { label: 'Get in Touch', href: '#contact' },
 ]
 
@@ -29,13 +32,17 @@ const linkItem = {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const lenis = useLenis()
 
+  // Lenis owns the scroll position, so it has to be the thing that stops.
+  // Setting body.overflow alone leaves it animating behind the overlay.
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [open])
+    if (!lenis) return
+    if (open) lenis.stop()
+    else lenis.start()
+
+    return () => lenis.start()
+  }, [open, lenis])
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && setOpen(false)
@@ -49,12 +56,9 @@ export default function Navbar() {
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-[19px] md:px-8 lg:px-9">
           <a
             href="#"
-            className="font-serif text-[30px] leading-none font-semibold tracking-[-0.08em] italic"
+            className="text-[26px] leading-none font-semibold tracking-[-0.06em] md:text-[30px]"
           >
-            Alwayzz
-            <span className="ml-0.5 align-super font-sans text-sm font-semibold tracking-normal not-italic">
-              &reg;
-            </span>
+            ITBIZ<span className="font-serif italic">one</span>
           </a>
 
           <motion.button
@@ -101,8 +105,8 @@ export default function Navbar() {
             </nav>
 
             <div className="border-t border-soft px-5 py-6 text-center text-[13px] text-muted md:px-9 md:py-7">
-              &copy; {new Date().getFullYear()}{' '}
-              Alwayzz&reg; &mdash; All rights reserved.
+              &copy; {new Date().getFullYear()} {SITE.name} &mdash; All rights
+              reserved.
             </div>
           </motion.div>
         )}

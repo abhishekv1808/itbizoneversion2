@@ -1,4 +1,6 @@
 import { Inter, Source_Serif_4, Cedarville_Cursive } from 'next/font/google'
+import SmoothScroll from '@/components/SmoothScroll'
+import { SITE } from '@/lib/site'
 import './globals.css'
 
 const inter = Inter({
@@ -22,16 +24,17 @@ const cedarville = Cedarville_Cursive({
 })
 
 export const metadata = {
-  title: 'Alwayzz® — Premium creative on demand.',
-  description:
-    'A flexible design partnership for founders, brands, and agencies who want top craft delivered on their timeline.',
+  title: `${SITE.name} — Everything digital, under one roof.`,
+  description: SITE.description,
 }
 
 export default function RootLayout({ children }) {
   return (
+    // No `scroll-smooth`: native smooth scrolling and Lenis both animate the
+    // same scroll position and fight each other on anchor jumps.
     <html
       lang="en"
-      className={`${inter.variable} ${sourceSerif.variable} ${cedarville.variable} scroll-smooth`}
+      className={`${inter.variable} ${sourceSerif.variable} ${cedarville.variable}`}
     >
       <head>
         <link
@@ -41,7 +44,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="bg-bg text-ink font-sans tracking-[-0.02em] antialiased overflow-x-hidden">
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   )

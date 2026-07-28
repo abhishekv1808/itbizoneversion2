@@ -3,37 +3,40 @@ import Reveal from '@/components/ui/Reveal'
 import Counter from '@/components/ui/Counter'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 
+// `verified` marks a figure that comes from the MCA registration or the
+// service list. The rest are PLACEHOLDERS — swap them for real numbers
+// before this goes live.
 const STATS = [
-  { to: 12, suffix: '', label: 'Years in practice' },
-  { to: 240, suffix: '+', label: 'Projects shipped' },
-  { to: 38, suffix: '', label: 'Countries served' },
-  { to: 96, suffix: '%', label: 'Client retention' },
+  { to: 3, suffix: '', label: 'Years in business', verified: true },
+  { to: 6, suffix: '', label: 'Services under one roof', verified: true },
+  { to: 150, suffix: '+', label: 'Projects delivered' },
+  { to: 90, suffix: '%', label: 'Clients who stay on' },
 ]
 
 export default function Introduction() {
   return (
     <Section id="about">
       <Reveal>
-        <Eyebrow>About the studio</Eyebrow>
+        <Eyebrow>About us</Eyebrow>
       </Reveal>
 
       <div className="mt-7 grid gap-10 md:grid-cols-12 md:gap-12">
         <Reveal delay={0.05} className="md:col-span-7">
           <SectionTitle>
-            A studio built for the way modern teams <Accent>actually</Accent>{' '}
-            ship.
+            One team for the whole <Accent>digital</Accent> stack.
           </SectionTitle>
         </Reveal>
 
         <Reveal delay={0.12} className="flex flex-col gap-5 md:col-span-5 md:pt-2">
           <Lede>
-            Alwayzz is a small, senior team that plugs into your roadmap instead
-            of sitting beside it. No account layers, no handoff theatre — the
-            people who scope the work are the people who make it.
+            ITBIZONE Technologies is a Bengaluru IT consultancy building
+            websites, brands and campaigns for businesses that would rather
+            not manage four different vendors to get one thing launched.
           </Lede>
           <Lede>
-            We work in continuous partnerships rather than one-off projects, so
-            the craft compounds release after release.
+            Because the site, the design and the marketing are made in the same
+            room, the handoffs that usually cost you a month simply
+            don&rsquo;t happen.
           </Lede>
         </Reveal>
       </div>

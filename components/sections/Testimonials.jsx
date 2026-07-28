@@ -6,24 +6,26 @@ import Reveal, { RevealGroup, revealItem } from '@/components/ui/Reveal'
 import Monogram from '@/components/ui/Monogram'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 
+// PLACEHOLDER — carried over from the v1 site, which used them as samples.
+// Replace with real, attributable quotes before launch.
 const TESTIMONIALS = [
   {
     quote:
-      'They rebuilt our identity and the front-end in the same quarter, and the two actually match. That has never once happened to us before.',
-    name: 'Marisa Okonjo',
-    role: 'VP Brand, Ledgerline',
+      'ITBIZONE transformed our digital presence completely. The site, the branding and the ad campaigns finally pull in the same direction.',
+    name: 'Rajesh Kumar',
+    role: 'CEO, TechStart Bangalore',
   },
   {
     quote:
-      'The retainer replaced three vendors. Faster, and the work argues with us in the way good partners should.',
-    name: 'Daniel Ferreira',
-    role: 'Head of Product, Northsend',
+      'Their e-commerce build handled our first festive season without a single checkout failure. That alone paid for the project.',
+    name: 'Priya Sharma',
+    role: 'Founder, E-Store Mumbai',
   },
   {
     quote:
-      'Every handoff arrives production-ready. Our engineers stopped rewriting design files six weeks in.',
-    name: 'Priya Raghunathan',
-    role: 'Director of Engineering, Corvus',
+      'Professional and on time. We knew the cost before work started and the number never moved.',
+    name: 'Amit Patel',
+    role: 'Director, FinTech Solutions',
   },
 ]
 
@@ -40,8 +42,8 @@ export default function Testimonials() {
 
         <Reveal delay={0.1} className="max-w-[340px]">
           <Lede>
-            The shortest version: teams stay, and they widen the scope after the
-            first engagement.
+            The shortest version: clients stay, and they hand us the next
+            project before the first one ships.
           </Lede>
         </Reveal>
       </div>

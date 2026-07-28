@@ -5,17 +5,20 @@ import { ArrowUpRight } from 'lucide-react'
 import Section from '@/components/ui/Section'
 import Reveal, { RevealGroup, revealItem } from '@/components/ui/Reveal'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
+import { SITE } from '@/lib/site'
 
-const ROLES = [
-  { title: 'Senior Product Designer', team: 'Design', type: 'Full-time', place: 'Remote (CET ±3)' },
-  { title: 'Front-End Engineer', team: 'Engineering', type: 'Full-time', place: 'Lisbon / Remote' },
-  { title: 'Motion Designer', team: 'Motion & 3D', type: 'Contract', place: 'Remote' },
-  { title: 'Studio Producer', team: 'Operations', type: 'Full-time', place: 'Lisbon' },
+// Disciplines we hire into, rather than specific vacancies — swap this for a
+// live openings list once there are roles to name.
+const DISCIPLINES = [
+  { title: 'Web Development', detail: 'React, Next.js, Node.js, WordPress' },
+  { title: 'UI/UX Design', detail: 'Research, wireframes, design systems' },
+  { title: 'Digital Marketing', detail: 'SEO, Google Ads, paid social' },
+  { title: 'Graphic Design', detail: 'Identity, print, packaging, motion' },
 ]
 
 export default function Careers() {
   return (
-    <Section id="careers" className="bg-panel">
+    <Section id="careers">
       <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
         <Reveal className="max-w-[560px]">
           <Eyebrow>Careers</Eyebrow>
@@ -23,41 +26,34 @@ export default function Careers() {
             Come build <Accent>with us</Accent>.
           </SectionTitle>
           <Lede className="mt-6 max-w-[430px]">
-            Four open roles. We read every application ourselves and reply
-            either way, usually within a week.
+            We hire across four disciplines in Bengaluru. Send your work even
+            when nothing is posted — we read everything that arrives and reply
+            either way.
           </Lede>
         </Reveal>
 
         <Reveal delay={0.1}>
           <span className="inline-flex items-center gap-2 rounded-full border border-soft bg-bg px-4 py-2 text-[13px] font-medium text-muted">
             <span className="size-2 rounded-full bg-dot" />
-            Hiring now
+            Open applications
           </span>
         </Reveal>
       </div>
 
       <RevealGroup className="mt-12 border-t border-soft">
-        {ROLES.map((role) => (
+        {DISCIPLINES.map((discipline) => (
           <motion.a
-            key={role.title}
-            href="#contact"
+            key={discipline.title}
+            href={`mailto:${SITE.email}?subject=Application%20%E2%80%94%20${encodeURIComponent(discipline.title)}`}
             variants={revealItem}
             className="group flex flex-col gap-3 border-b border-soft py-6 md:flex-row md:items-center md:justify-between md:gap-8"
           >
-            <span className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-4">
-              <span className="text-[21px] leading-tight font-semibold tracking-[-0.04em] transition-transform duration-300 group-hover:translate-x-1 md:text-[26px]">
-                {role.title}
-              </span>
-              <span className="text-[13px] font-medium text-quiet">
-                {role.team}
-              </span>
+            <span className="text-[21px] leading-tight font-semibold tracking-[-0.04em] transition-transform duration-300 group-hover:translate-x-1 md:text-[26px]">
+              {discipline.title}
             </span>
 
             <span className="flex items-center gap-3">
-              <span className="rounded-full border border-soft px-3 py-1.5 text-[13px] font-medium text-muted">
-                {role.type}
-              </span>
-              <span className="text-[13px] text-muted">{role.place}</span>
+              <span className="text-[13px] text-muted">{discipline.detail}</span>
               <ArrowUpRight
                 size={18}
                 className="text-quiet transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink"
@@ -69,11 +65,14 @@ export default function Careers() {
 
       <Reveal delay={0.1} className="mt-8">
         <Lede className="text-[15px]">
-          Nothing matching?{' '}
-          <a href="#contact" className="font-medium text-ink underline underline-offset-4">
-            Send an open application
+          Not sure which one fits?{' '}
+          <a
+            href={`mailto:${SITE.email}`}
+            className="font-medium text-ink underline underline-offset-4"
+          >
+            Write to {SITE.email}
           </a>{' '}
-          — we keep a short list.
+          &mdash; we keep a short list.
         </Lede>
       </Reveal>
     </Section>
