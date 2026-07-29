@@ -4,40 +4,23 @@ import BookCall from '@/components/ui/BookCall'
 import OfficeStatus from '@/components/ui/OfficeStatus'
 import { Accent } from '@/components/ui/Type'
 import { SITE, SOCIALS } from '@/lib/site'
+import { breadcrumbSchema, contactPointSchema } from '@/lib/schema'
 
 const FULL_ADDRESS = `${SITE.address.line1}, ${SITE.address.line2}, ${SITE.address.city}`
 const MAP_SRC = `https://www.google.com/maps?q=${encodeURIComponent(FULL_ADDRESS)}&output=embed`
 
 export const metadata = {
   title: `Contact — ${SITE.name}`,
-  description: `Talk to ${SITE.legalName} about a website, brand or campaign. Bengaluru studio, ${SITE.hours}. Written quotations within one working day.`,
+  // Kept under 160 characters so it does not truncate mid-sentence in results.
+  description: `Talk to ${SITE.name} about a website, brand or campaign. Bengaluru studio. Written quotations back within one working day.`,
   alternates: { canonical: '/contact' },
 }
 
 export default function ContactPage() {
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    name: SITE.legalName,
-    email: SITE.email,
-    telephone: SITE.phone,
-    url: 'https://itbizone.com',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: `${SITE.address.line1}, ${SITE.address.line2}`,
-      addressLocality: 'Bengaluru',
-      addressRegion: 'Karnataka',
-      postalCode: '560057',
-      addressCountry: 'IN',
-    },
-    openingHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
-      closes: '18:00',
-    },
-    sameAs: SOCIALS.map((social) => social.href),
-  }
+  const schema = [
+    contactPointSchema(),
+    breadcrumbSchema([{ name: 'Contact', path: '/contact' }]),
+  ]
 
   return (
     <>

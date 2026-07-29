@@ -60,21 +60,33 @@ export default function ServiceFAQ({ service }) {
                     </button>
                   </h3>
 
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <p className="pr-10 pb-5 text-[15px] leading-[1.55] text-muted">
-                          {faq.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {/*
+                    Always mounted, animated between heights rather than
+                    conditionally rendered.
+
+                    Unmounting the closed answers kept 5 of every 6 out of the
+                    HTML entirely, so a crawler doing passage extraction from
+                    rendered text only ever saw the one open by default. The
+                    answers are the most citable prose on the site — they are
+                    direct question/answer pairs — so they need to be present
+                    whether or not the accordion is open. `hidden` here is the
+                    visibility hint for assistive tech; the text stays in the
+                    document either way.
+                  */}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: isOpen ? 'auto' : 0,
+                      opacity: isOpen ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden"
+                    aria-hidden={!isOpen}
+                  >
+                    <p className="pr-10 pb-5 text-[15px] leading-[1.55] text-muted">
+                      {faq.a}
+                    </p>
+                  </motion.div>
                 </li>
               )
             })}

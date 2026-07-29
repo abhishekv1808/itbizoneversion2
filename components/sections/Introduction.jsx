@@ -1,7 +1,9 @@
+import Image from 'next/image'
 import Section from '@/components/ui/Section'
 import Reveal from '@/components/ui/Reveal'
 import Counter from '@/components/ui/Counter'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
+import { STUDIO_IMAGE } from '@/lib/images'
 
 // `verified` marks a figure that comes from the MCA registration or the
 // service list. The rest are PLACEHOLDERS — swap them for real numbers
@@ -40,6 +42,20 @@ export default function Introduction() {
           </Lede>
         </Reveal>
       </div>
+
+      {/* Greyscale so a colour photograph doesn't fight the type system;
+          comes to colour on hover. Placeholder — see lib/images.js. */}
+      <Reveal delay={0.1} y={28} className="mt-14 md:mt-16">
+        <figure className="group relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-soft md:aspect-[21/9]">
+          <Image
+            src={STUDIO_IMAGE.src}
+            alt={STUDIO_IMAGE.alt}
+            fill
+            sizes="(max-width: 1200px) 100vw, 1200px"
+            className="object-cover grayscale transition-[filter,transform] duration-700 group-hover:scale-[1.02] group-hover:grayscale-0"
+          />
+        </figure>
+      </Reveal>
 
       <div className="mt-16 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-soft pt-12 md:mt-20 md:grid-cols-4">
         {STATS.map((stat, i) => (

@@ -1,9 +1,16 @@
 import { Inter, Source_Serif_4, Cedarville_Cursive } from 'next/font/google'
 import SmoothScroll from '@/components/SmoothScroll'
 import Navbar from '@/components/Navbar'
+import Analytics from '@/components/Analytics'
+import WhatsAppFab from '@/components/ui/WhatsAppFab'
 import Footer from '@/components/sections/Footer'
-import { SITE } from '@/lib/site'
+import { SITE, SITE_URL } from '@/lib/site'
 import './globals.css'
+// Lenis' own rules: unpins html/body height, contains overscroll inside
+// [data-lenis-prevent] subtrees, and kills iframe pointer capture mid-scroll.
+// Imported here, not via @import in globals.css — Tailwind's CSS resolver
+// doesn't follow the package's "./dist/*" exports subpath, but Turbopack does.
+import 'lenis/dist/lenis.css'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,8 +33,27 @@ const cedarville = Cedarville_Cursive({
 })
 
 export const metadata = {
-  title: `${SITE.name} — Everything digital, under one roof.`,
+  // Lets every page declare relative canonicals and OG URLs.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE.name} — Everything digital, under one roof.`,
+    template: `%s — ${SITE.name}`,
+  },
   description: SITE.description,
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    siteName: SITE.name,
+    locale: 'en_IN',
+    url: '/',
+    title: `${SITE.name} — Everything digital, under one roof.`,
+    description: SITE.description,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE.name} — Everything digital, under one roof.`,
+    description: SITE.description,
+  },
 }
 
 export default function RootLayout({ children }) {
@@ -53,6 +79,10 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <Footer />
         </SmoothScroll>
+        {/* Outside SmoothScroll: both are fixed-position and must not be
+            affected by the scroll wrapper's transforms. */}
+        <WhatsAppFab />
+        <Analytics />
       </body>
     </html>
   )

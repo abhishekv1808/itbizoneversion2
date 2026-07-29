@@ -14,6 +14,7 @@ export default function Marquee({
   items,
   renderItem,
   duration = 30,
+  reverse = false,
   className = '',
 }) {
   const trackRef = useRef(null)
@@ -22,15 +23,16 @@ export default function Marquee({
   useEffect(() => {
     if (reducedMotion) return
 
-    const tween = gsap.to(trackRef.current, {
-      xPercent: -50,
-      duration,
-      ease: 'none',
-      repeat: -1,
-    })
+    // Reversed rows start already shifted and travel back to 0, so the track
+    // is never scrolled past its own content and the seam stays hidden.
+    const tween = gsap.fromTo(
+      trackRef.current,
+      { xPercent: reverse ? -50 : 0 },
+      { xPercent: reverse ? 0 : -50, duration, ease: 'none', repeat: -1 }
+    )
 
     return () => tween.kill()
-  }, [duration, reducedMotion])
+  }, [duration, reverse, reducedMotion])
 
   return (
     <div className={`edge-fade relative overflow-hidden ${className}`}>

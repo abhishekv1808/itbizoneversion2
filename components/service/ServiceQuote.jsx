@@ -28,6 +28,19 @@ export default function ServiceQuote({ service }) {
             start date back. No discovery fee, no obligation.
           </p>
 
+          {/* Catches the visitor who wants a number before speaking to anyone.
+              Deep-links to this service so the estimator opens pre-selected. */}
+          <p className="mt-5 text-[15px] text-muted">
+            Want a figure first?{' '}
+            <a
+              href={`/quote?service=${service.slug}`}
+              className="font-medium text-ink underline underline-offset-4"
+            >
+              Build an estimate in a minute
+            </a>
+            .
+          </p>
+
           <div className="mt-9 flex w-full max-w-[320px] flex-col items-center gap-4 md:max-w-none md:flex-row">
             <a
               href={`mailto:${SITE.email}?subject=${subject}`}

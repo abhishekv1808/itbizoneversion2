@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Loader2 } from 'lucide-react'
 import { SITE } from '@/lib/site'
+import { track, EVENTS } from '@/lib/analytics'
 
 const SERVICES = [
   'Website Development',
@@ -67,14 +68,25 @@ export default function ContactForm() {
       }
 
       if (!response.ok) {
+        // Worth its own event: a spike here means enquiries are being lost to
+        // a misconfigured mailer, which is invisible from the GA4 lead count.
+        track(EVENTS.leadFailed, { status: response.status })
         setFailure(payload.error || 'Something went wrong. Please try again.')
         setStatus('error')
         return
       }
 
+      // Fired only after the server confirms delivery, so the conversion
+      // count reflects enquiries that actually reached the inbox.
+      track(EVENTS.lead, {
+        service: values.service || 'unspecified',
+        has_phone: Boolean(values.phone),
+      })
+
       setValues(EMPTY)
       setStatus('sent')
     } catch {
+      track(EVENTS.leadFailed, { status: 'network' })
       setFailure('Could not reach the server. Please check your connection.')
       setStatus('error')
     }

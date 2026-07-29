@@ -11,10 +11,21 @@ import WhyUs from '@/components/sections/WhyUs'
 import Testimonials from '@/components/sections/Testimonials'
 import Careers from '@/components/sections/Careers'
 import ContactCTA from '@/components/sections/ContactCTA'
+import { organisationSchema, websiteSchema } from '@/lib/schema'
 
 export default function Page() {
   return (
     <>
+      {/* Local business + organisation markup. This is what feeds the
+          Bengaluru map pack and "near me" results; without it Google has to
+          infer the address from body copy. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([organisationSchema(), websiteSchema()]),
+        }}
+      />
+
       <Hero />
       <Introduction />
       <Services />

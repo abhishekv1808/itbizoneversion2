@@ -14,7 +14,8 @@ const LINKS = [
   { label: 'Industries', href: '#industries' },
   { label: 'About', href: '#about' },
   { label: 'Why us', href: '#why' },
-  // A real route, not a section — flagged so it renders as a plain link.
+  // Real routes, not sections — flagged so they render as plain links.
+  { label: 'Pricing', href: '/quote', route: true },
   { label: 'Contact', href: '/contact', route: true },
 ]
 

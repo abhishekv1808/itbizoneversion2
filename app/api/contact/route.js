@@ -1,4 +1,5 @@
 import { SITE } from '@/lib/site'
+import { priceSelection, formatINR } from '@/lib/pricing'
 
 /**
  * Contact form endpoint.
@@ -15,7 +16,7 @@ import { SITE } from '@/lib/site'
 
 const MAX = { name: 100, email: 200, phone: 40, company: 120, message: 4000 }
 
-function validate(body) {
+function validate(body, { quote } = {}) {
   const errors = {}
   const clean = (value) => (typeof value === 'string' ? value.trim() : '')
 
@@ -38,11 +39,18 @@ function validate(body) {
   if (phone && phone.length > MAX.phone) errors.phone = 'That number is too long.'
   if (company.length > MAX.company) errors.company = 'That name is too long.'
 
-  if (!message) errors.message = 'Tell us a little about the project.'
-  else if (message.length < 10)
+  // A priced selection is itself the brief, so the estimator does not ask for
+  // a message. Only require one when there is no quote attached.
+  if (quote) {
+    if (message.length > MAX.message)
+      errors.message = 'That is longer than we can accept — send the detail by email.'
+  } else if (!message) {
+    errors.message = 'Tell us a little about the project.'
+  } else if (message.length < 10) {
     errors.message = 'A bit more detail would help us quote properly.'
-  else if (message.length > MAX.message)
+  } else if (message.length > MAX.message) {
     errors.message = 'That is longer than we can accept — send the detail by email.'
+  }
 
   return {
     errors,
@@ -72,7 +80,24 @@ export async function POST(request) {
     return Response.json({ ok: true }, { status: 200 })
   }
 
-  const { errors, data } = validate(body)
+  /**
+   * Price the selection here rather than accepting a total from the browser.
+   * A tampered payload could otherwise drop a ₹1 "quotation" into the inbox
+   * and it would look official, because it arrived through the normal route.
+   * Unknown item names are dropped by priceSelection.
+   */
+  const quote = body.quote
+    ? priceSelection(body.quote.slug, body.quote.items)
+    : null
+
+  if (body.quote && !quote) {
+    return Response.json(
+      { error: 'That selection is no longer available. Please rebuild it.' },
+      { status: 422 }
+    )
+  }
+
+  const { errors, data } = validate(body, { quote })
   if (Object.keys(errors).length) {
     return Response.json({ errors }, { status: 422 })
   }
@@ -105,6 +130,30 @@ export async function POST(request) {
     )
     .join('')
 
+  const quoteBlock = quote
+    ? `
+        <h3 style="margin:24px 0 8px;font-size:15px">Estimate built on the site</h3>
+        <table style="border-collapse:collapse;width:100%;font-size:14px">
+          ${quote.items
+            .map(
+              (item) =>
+                `<tr><td style="padding:6px 16px 6px 0;border-bottom:1px solid #eee">${escapeHtml(item.name)}</td><td style="padding:6px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap">${escapeHtml(formatINR(item.price))}</td></tr>`
+            )
+            .join('')}
+          <tr>
+            <td style="padding:10px 16px 0 0"><strong>Indicative range</strong></td>
+            <td style="padding:10px 0 0;text-align:right;white-space:nowrap"><strong>${escapeHtml(formatINR(quote.low))} – ${escapeHtml(formatINR(quote.high))}</strong></td>
+          </tr>
+        </table>
+        <p style="margin:12px 0 0;font-size:13px;color:#6b6b6b">
+          Prices recalculated server-side from the catalogue, not taken from the browser.
+        </p>`
+    : ''
+
+  const messageBlock = data.message
+    ? `<div style="padding:16px;background:#fafafa;border-radius:8px;white-space:pre-wrap">${escapeHtml(data.message)}</div>`
+    : ''
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -117,12 +166,15 @@ export async function POST(request) {
         to: [to],
         // So hitting reply in the inbox goes to the enquirer, not to us.
         reply_to: data.email,
-        subject: `New enquiry — ${data.name}${data.service ? ` (${data.service})` : ''}`,
+        subject: quote
+          ? `Estimate request — ${data.name} (${quote.service}, ${formatINR(quote.low)}+)`
+          : `New enquiry — ${data.name}${data.service ? ` (${data.service})` : ''}`,
         html: `
           <div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5;color:#0a0a0a">
-            <h2 style="margin:0 0 16px;font-size:18px">New enquiry from the website</h2>
+            <h2 style="margin:0 0 16px;font-size:18px">${quote ? 'Estimate request from the website' : 'New enquiry from the website'}</h2>
             <table style="border-collapse:collapse;margin-bottom:20px">${rows}</table>
-            <div style="padding:16px;background:#fafafa;border-radius:8px;white-space:pre-wrap">${escapeHtml(data.message)}</div>
+            ${messageBlock}
+            ${quoteBlock}
           </div>
         `,
       }),

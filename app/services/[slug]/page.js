@@ -6,9 +6,24 @@ import ServiceProcess from '@/components/service/ServiceProcess'
 import ServiceWork from '@/components/service/ServiceWork'
 import ServiceFAQ from '@/components/service/ServiceFAQ'
 import ServiceQuote from '@/components/service/ServiceQuote'
+import ServiceShowcase from '@/components/service/ServiceShowcase'
 import DesignGallery from '@/components/sections/DesignGallery'
+import DesignShowcase from '@/components/sections/DesignShowcase'
 import { getService, SERVICE_SLUGS } from '@/lib/services'
 import { SITE } from '@/lib/site'
+import { breadcrumbSchema, serviceSchema } from '@/lib/schema'
+
+/** Keys usable in a service's `layout`. */
+const BLOCKS = {
+  pillars: ServicePillars,
+  showcase: ServiceShowcase,
+  deliverables: ServiceDeliverables,
+  process: ServiceProcess,
+  work: ServiceWork,
+  gallery: DesignGallery,
+  morph: DesignShowcase,
+  faq: ServiceFAQ,
+}
 
 // Every service is known at build time, so each one prerenders as static HTML.
 export function generateStaticParams() {
@@ -50,50 +65,37 @@ export default async function ServicePage({ params }) {
     })),
   }
 
-  const serviceSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    serviceType: service.name,
-    description: service.metaDescription,
-    areaServed: 'IN',
-    provider: {
-      '@type': 'Organization',
-      name: SITE.legalName,
-      email: SITE.email,
-      telephone: SITE.phone,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: `${SITE.address.line1}, ${SITE.address.line2}`,
-        addressLocality: 'Bengaluru',
-        postalCode: '560057',
-        addressCountry: 'IN',
-      },
-    },
-  }
+  // provider is an @id reference to the single organisation node, not a
+  // restatement of the company — see lib/schema.js.
+  const service_ = serviceSchema(service)
+  const crumbs = breadcrumbSchema([
+    { name: 'Services', path: '/#services' },
+    { name: service.name, path: `/services/${service.slug}` },
+  ])
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([serviceSchema, faqSchema]),
+          __html: JSON.stringify([service_, faqSchema, crumbs]),
         }}
       />
 
       <ServiceHero service={service} />
-      <ServicePillars service={service} />
-      <ServiceDeliverables service={service} />
-      <ServiceProcess service={service} />
 
-      {/* Proof, in whichever form suits the service: real project cards, or
-          the interactive poster wall for design work. */}
-      {service.showcase === 'design-gallery' ? (
-        <DesignGallery />
-      ) : (
-        <ServiceWork service={service} />
-      )}
+      {/*
+        Section order comes from the service's own `layout`, so the six pages
+        argue in the order that suits them — a visual service leads with the
+        photograph, a measurable one leads with method — instead of all six
+        running the identical template. Sections that render nothing (proof
+        without case studies) simply drop out.
+      */}
+      {service.layout.map((key) => {
+        const Block = BLOCKS[key]
+        return Block ? <Block key={key} service={service} /> : null
+      })}
 
-      <ServiceFAQ service={service} />
       <ServiceQuote service={service} />
     </>
   )

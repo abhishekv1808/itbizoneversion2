@@ -21,12 +21,14 @@ const SERVICES = [
     title: 'UI/UX Design',
     copy: 'Research, flows and interface design that decide what the product does before anyone argues about what it looks like.',
     tags: ['User flows', 'Wireframes', 'Prototypes'],
+    href: '/services/ui-ux-design',
   },
   {
     id: '03',
     title: 'Digital Marketing',
     copy: 'SEO, Google Ads and paid social run against tracked numbers — leads and conversions, not impressions.',
     tags: ['SEO', 'Google Ads', 'PPC'],
+    href: '/services/digital-marketing',
   },
   {
     id: '04',
@@ -47,6 +49,7 @@ const SERVICES = [
     title: 'E-commerce Development',
     copy: 'Storefronts with payment gateways, inventory and analytics wired in — from first catalogue to checkout.',
     tags: ['Storefronts', 'Payments', 'Inventory'],
+    href: '/services/ecommerce-development',
   },
 ]
 

@@ -7,15 +7,13 @@ import { SITE, SOCIALS } from '@/lib/site'
 const COLUMNS = [
   {
     heading: 'Services',
-    // Real routes where a page exists; the rest fall back to the home
-    // section until their page ships.
     links: [
       { label: 'Website Development', href: '/services/website-development' },
-      { label: 'UI/UX Design', hash: '#services' },
-      { label: 'Digital Marketing', hash: '#services' },
+      { label: 'UI/UX Design', href: '/services/ui-ux-design' },
+      { label: 'Digital Marketing', href: '/services/digital-marketing' },
       { label: 'Graphic Design', href: '/services/graphic-design' },
       { label: 'Social Media', href: '/services/social-media-management' },
-      { label: 'E-commerce', hash: '#services' },
+      { label: 'E-commerce', href: '/services/ecommerce-development' },
     ],
   },
   {
@@ -27,6 +25,7 @@ const COLUMNS = [
       { label: 'Clients', hash: '#clients' },
       { label: 'How we work', hash: '#process' },
       { label: 'Careers', hash: '#careers' },
+      { label: 'Pricing', href: '/quote' },
       { label: 'Contact', href: '/contact' },
     ],
   },

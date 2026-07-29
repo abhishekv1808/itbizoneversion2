@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion'
 import { CalendarClock } from 'lucide-react'
 import loadCalendly from '@/lib/calendly'
-import { SITE } from '@/lib/site'
+import { SITE, bookingHref, hasCalendly } from '@/lib/site'
+import { track, EVENTS } from '@/lib/analytics'
 
 const lift = {
   rest: { y: 0, boxShadow: '0 0 0 rgba(0,0,0,0)' },
@@ -21,11 +22,15 @@ const lift = {
  */
 export default function BookCall({ className = '' }) {
   // Warm the widget on intent, so the click itself has nothing to wait for.
+  // Pointless while no event URL is configured, so skip the request entirely.
   const prefetch = () => {
+    if (!hasCalendly) return
     loadCalendly().catch(() => {})
   }
 
   const open = async (event) => {
+    track(EVENTS.booking, { destination: hasCalendly ? 'calendly' : 'contact' })
+
     // Anything but an unmodified left click is the browser's to handle.
     if (
       event.metaKey ||
@@ -36,6 +41,9 @@ export default function BookCall({ className = '' }) {
     ) {
       return
     }
+
+    // No event URL yet: let the anchor navigate to /contact on its own.
+    if (!hasCalendly) return
 
     event.preventDefault()
 
@@ -53,9 +61,9 @@ export default function BookCall({ className = '' }) {
 
   return (
     <motion.a
-      href={SITE.calendly}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={bookingHref}
+      // Only leave the site when there is somewhere external to go.
+      {...(hasCalendly && { target: '_blank', rel: 'noopener noreferrer' })}
       onClick={open}
       onPointerEnter={prefetch}
       onFocus={prefetch}
@@ -74,7 +82,8 @@ export default function BookCall({ className = '' }) {
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs leading-tight font-medium text-quiet">
           <span className="size-2 shrink-0 rounded-full bg-dot" />
-          Pick a slot
+          {/* Don't promise a calendar we can't open yet. */}
+          {hasCalendly ? 'Pick a slot' : 'Send us a brief'}
         </span>
       </span>
     </motion.a>

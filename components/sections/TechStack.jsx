@@ -1,44 +1,98 @@
 'use client'
 
 import Marquee from '@/components/Marquee'
+import Section from '@/components/ui/Section'
+import Reveal from '@/components/ui/Reveal'
+import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
+import { TECH_GROUPS } from '@/lib/techLogos'
 
-// Drawn from the stacks listed across the v1 portfolio and service pages.
-const TOOLS = [
-  { name: 'React', className: 'font-sans font-semibold' },
-  { name: 'Next.js', className: 'font-sans font-bold' },
-  { name: 'Node.js', className: 'font-[system-ui] font-semibold' },
-  { name: 'MongoDB', className: 'font-[system-ui] font-extrabold' },
-  { name: 'WordPress', className: 'font-[Georgia,serif] font-medium' },
-  { name: 'Shopify', className: 'font-[system-ui] font-extrabold' },
-  { name: 'Tailwind CSS', className: 'font-sans font-semibold' },
-  { name: 'AWS', className: 'font-[system-ui] font-bold' },
-  { name: 'Figma', className: 'font-sans font-semibold' },
-  { name: 'Google Ads', className: 'font-[Georgia,serif] font-bold' },
-  { name: 'Meta Ads', className: 'font-serif font-semibold' },
-  { name: 'Razorpay', className: 'font-[system-ui] font-semibold' },
-]
+/**
+ * One row per discipline, alternating direction so the section reads as three
+ * distinct bands rather than one long drift.
+ *
+ * Rows are staggered in speed as well as direction — identical durations make
+ * neighbouring rows visually lock together and the movement stops reading as
+ * separate tracks.
+ */
+const ROW_DURATION = [42, 34, 48]
+
+function ToolChip({ tool }) {
+  return (
+    <span className="mr-3 inline-flex shrink-0 items-center gap-2.5 rounded-full border border-soft bg-bg py-2.5 pr-5 pl-3.5 whitespace-nowrap transition-colors duration-300 hover:border-ink/15 hover:bg-chip">
+      {tool.path ? (
+        // Glyph is decorative — the sibling text carries the accessible name.
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          className="size-[18px] shrink-0"
+          fill={tool.hex}
+        >
+          <path d={tool.path} />
+        </svg>
+      ) : (
+        // No licensed glyph. An initial reads as deliberate lettering; an
+        // empty circle read as a broken image.
+        <span
+          aria-hidden="true"
+          className="inline-flex size-[18px] shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
+          style={
+            tool.hex
+              ? { background: tool.hex, color: '#fff' }
+              : { background: 'var(--color-soft)', color: 'var(--color-muted)' }
+          }
+        >
+          {tool.name[0]}
+        </span>
+      )}
+
+      <span className="text-[15px] font-medium tracking-[-0.02em] text-ink">
+        {tool.name}
+      </span>
+    </span>
+  )
+}
 
 export default function TechStack() {
   return (
-    <section id="stack" className="border-y border-soft px-6 md:px-9">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col items-start gap-5 py-9 md:flex-row md:items-center md:gap-10">
-        <p className="max-w-[163px] shrink-0 text-sm leading-[1.35] font-medium text-muted">
-          Built on tools your next developer will already know
-        </p>
+    <Section id="stack" className="bg-panel">
+      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <Reveal className="max-w-[600px]">
+          <Eyebrow>The stack</Eyebrow>
+          <SectionTitle className="mt-7">
+            Built on tools your next developer will <Accent>already</Accent>{' '}
+            know.
+          </SectionTitle>
+        </Reveal>
 
-        <Marquee
-          items={TOOLS}
-          renderItem={(tool, key) => (
-            <span
-              key={key}
-              className={`mr-11 shrink-0 text-base whitespace-nowrap ${tool.className}`}
-            >
-              {tool.name}
-            </span>
-          )}
-          className="flex h-9 w-full min-w-0 flex-1 items-center"
-        />
+        <Reveal delay={0.1} className="max-w-[350px]">
+          <Lede>
+            No proprietary page builder, no licence you have to keep renewing to
+            keep your own site running. If you replace us, whoever comes next
+            opens the project and recognises it.
+          </Lede>
+        </Reveal>
       </div>
-    </section>
+
+      <div className="mt-14 flex flex-col gap-9">
+        {TECH_GROUPS.map((group, i) => (
+          <Reveal key={group.id} delay={i * 0.08}>
+            <div className="flex items-baseline justify-between gap-4">
+              <h3 className="text-[13px] font-medium text-muted">
+                {group.label}
+              </h3>
+              <span className="text-[13px] text-quiet">{group.note}</span>
+            </div>
+
+            <Marquee
+              items={group.tools}
+              duration={ROW_DURATION[i % ROW_DURATION.length]}
+              reverse={i % 2 === 1}
+              renderItem={(tool, key) => <ToolChip key={key} tool={tool} />}
+              className="mt-3.5 flex items-center"
+            />
+          </Reveal>
+        ))}
+      </div>
+    </Section>
   )
 }
