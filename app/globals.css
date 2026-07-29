@@ -30,6 +30,14 @@
   --font-cursive: var(--font-cedarville), cursive;
 }
 
+/* Lenis blanket-disables pointer events on every iframe so a cursor over one
+   cannot swallow the scroll. That also kills legitimately interactive embeds,
+   so opt individual ones back in — pair with data-lenis-prevent on the wrapper
+   so the embed's own scrolling stays out of the page. */
+.lenis.lenis-smooth .allow-iframe iframe {
+  pointer-events: auto;
+}
+
 /* Edge-fade for the marquees — two properties, so it earns a utility
    rather than a pair of arbitrary values repeated at each call site. */
 @utility edge-fade {

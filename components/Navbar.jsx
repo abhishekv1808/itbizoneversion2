@@ -4,15 +4,18 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLenis } from 'lenis/react'
 import { ChevronUp } from 'lucide-react'
+import SectionLink from '@/components/ui/SectionLink'
 import { SITE } from '@/lib/site'
 
 const LINKS = [
   { label: 'Services', href: '#services' },
   { label: 'Work', href: '#work' },
+  { label: 'Design', href: '#design' },
   { label: 'Industries', href: '#industries' },
   { label: 'About', href: '#about' },
   { label: 'Why us', href: '#why' },
-  { label: 'Get in Touch', href: '#contact' },
+  // A real route, not a section — flagged so it renders as a plain link.
+  { label: 'Contact', href: '/contact', route: true },
 ]
 
 const overlay = {
@@ -55,7 +58,7 @@ export default function Navbar() {
       <header className="fixed inset-x-0 top-0 z-100">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-[19px] md:px-8 lg:px-9">
           <a
-            href="#"
+            href="/"
             className="text-[26px] leading-none font-semibold tracking-[-0.06em] md:text-[30px]"
           >
             ITBIZ<span className="font-serif italic">one</span>
@@ -91,17 +94,29 @@ export default function Navbar() {
             className="fixed inset-0 z-99 flex flex-col bg-bg"
           >
             <nav className="flex flex-1 flex-col items-center justify-center gap-1">
-              {LINKS.map((link) => (
-                <motion.a
-                  key={link.label}
-                  href={link.href}
-                  variants={linkItem}
-                  onClick={() => setOpen(false)}
-                  className="text-[32px] leading-[1.25] font-medium tracking-[-0.04em] transition-opacity duration-200 hover:opacity-45 lg:text-[40px] xl:text-[48px]"
-                >
-                  {link.label}
-                </motion.a>
-              ))}
+              {LINKS.map((link) => {
+                const style =
+                  'text-[32px] leading-[1.25] font-medium tracking-[-0.04em] transition-opacity duration-200 hover:opacity-45 lg:text-[40px] xl:text-[48px]'
+                const close = () => setOpen(false)
+
+                return (
+                  <motion.div key={link.label} variants={linkItem}>
+                    {link.route ? (
+                      <a href={link.href} onClick={close} className={style}>
+                        {link.label}
+                      </a>
+                    ) : (
+                      <SectionLink
+                        hash={link.href}
+                        onClick={close}
+                        className={style}
+                      >
+                        {link.label}
+                      </SectionLink>
+                    )}
+                  </motion.div>
+                )
+              })}
             </nav>
 
             <div className="border-t border-soft px-5 py-6 text-center text-[13px] text-muted md:px-9 md:py-7">

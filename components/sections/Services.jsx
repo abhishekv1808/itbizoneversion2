@@ -14,6 +14,7 @@ const SERVICES = [
     title: 'Website Development',
     copy: 'Custom sites and web applications — built responsive, fast, and structured so search engines can actually read them.',
     tags: ['Custom builds', 'CMS', 'Web apps'],
+    href: '/services/website-development',
   },
   {
     id: '02',
@@ -32,12 +33,14 @@ const SERVICES = [
     title: 'Graphic Design',
     copy: 'Logos, brand identity, print and packaging, with the guidelines that keep it all consistent once your team grows.',
     tags: ['Identity', 'Print', 'Packaging'],
+    href: '/services/graphic-design',
   },
   {
     id: '05',
     title: 'Social Media Management',
     copy: 'Strategy, content calendars and community management, reported monthly against growth and engagement.',
     tags: ['Content', 'Campaigns', 'Reporting'],
+    href: '/services/social-media-management',
   },
   {
     id: '06',
@@ -68,10 +71,12 @@ export default function Services() {
 
       <RevealGroup className="mt-14 grid gap-px overflow-hidden rounded-3xl border border-soft bg-soft md:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((service) => (
+          // Cards become links only once that service has a page — the rest
+          // stay inert rather than promising a route that 404s.
           <motion.article
             key={service.id}
             variants={revealItem}
-            className="group flex flex-col gap-4 bg-bg p-7 transition-colors duration-300 hover:bg-chip lg:p-8"
+            className="group relative flex flex-col gap-4 bg-bg p-7 transition-colors duration-300 hover:bg-chip lg:p-8"
           >
             <div className="flex items-start justify-between">
               <span className="text-[13px] font-medium text-quiet tabular-nums">
@@ -84,7 +89,15 @@ export default function Services() {
             </div>
 
             <h3 className="text-[26px] leading-tight font-semibold tracking-[-0.045em]">
-              {service.title}
+              {service.href ? (
+                // Stretched link: the whole card is clickable, but only the
+                // title is in the tab order and read out as the link text.
+                <a href={service.href} className="after:absolute after:inset-0">
+                  {service.title}
+                </a>
+              ) : (
+                service.title
+              )}
             </h3>
 
             <p className="text-[15px] leading-[1.5] text-muted">

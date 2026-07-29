@@ -1,5 +1,7 @@
 import { Inter, Source_Serif_4, Cedarville_Cursive } from 'next/font/google'
 import SmoothScroll from '@/components/SmoothScroll'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/sections/Footer'
 import { SITE } from '@/lib/site'
 import './globals.css'
 
@@ -44,7 +46,13 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="bg-bg text-ink font-sans tracking-[-0.02em] antialiased overflow-x-hidden">
-        <SmoothScroll>{children}</SmoothScroll>
+        {/* Chrome lives here rather than in each page, so every route —
+            home and the service pages — shares one nav and footer. */}
+        <SmoothScroll>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   )

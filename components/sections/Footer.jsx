@@ -1,29 +1,33 @@
 import { ArrowUpRight } from 'lucide-react'
 import BackToTop from '@/components/ui/BackToTop'
 import OfficeStatus from '@/components/ui/OfficeStatus'
+import SectionLink from '@/components/ui/SectionLink'
 import { SITE, SOCIALS } from '@/lib/site'
 
 const COLUMNS = [
   {
     heading: 'Services',
+    // Real routes where a page exists; the rest fall back to the home
+    // section until their page ships.
     links: [
-      { label: 'Website Development', href: '#services' },
-      { label: 'UI/UX Design', href: '#services' },
-      { label: 'Digital Marketing', href: '#services' },
-      { label: 'Graphic Design', href: '#services' },
-      { label: 'Social Media', href: '#services' },
-      { label: 'E-commerce', href: '#services' },
+      { label: 'Website Development', href: '/services/website-development' },
+      { label: 'UI/UX Design', hash: '#services' },
+      { label: 'Digital Marketing', hash: '#services' },
+      { label: 'Graphic Design', href: '/services/graphic-design' },
+      { label: 'Social Media', href: '/services/social-media-management' },
+      { label: 'E-commerce', hash: '#services' },
     ],
   },
   {
     heading: 'Company',
     links: [
-      { label: 'About', href: '#about' },
-      { label: 'Work', href: '#work' },
-      { label: 'Clients', href: '#clients' },
-      { label: 'How we work', href: '#process' },
-      { label: 'Careers', href: '#careers' },
-      { label: 'Contact', href: '#contact' },
+      { label: 'About', hash: '#about' },
+      { label: 'Work', hash: '#work' },
+      { label: 'Design gallery', hash: '#design' },
+      { label: 'Clients', hash: '#clients' },
+      { label: 'How we work', hash: '#process' },
+      { label: 'Careers', hash: '#careers' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {
@@ -41,7 +45,7 @@ export default function Footer() {
         <div className="grid gap-14 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-5">
             <a
-              href="#"
+              href="/"
               className="text-[40px] leading-none font-semibold tracking-[-0.06em] md:text-[52px]"
             >
               ITBIZ<span className="font-serif italic">one</span>
@@ -97,26 +101,39 @@ export default function Footer() {
                   {column.heading}
                 </h3>
                 <ul className="flex flex-col gap-3">
-                  {column.links.map((link) => (
-                    <li key={link.label}>
-                      <a
-                        href={link.href}
-                        {...(link.external && {
-                          target: '_blank',
-                          rel: 'noopener noreferrer',
-                        })}
-                        className="group inline-flex items-center gap-1 text-[15px] font-medium text-white/75 transition-colors duration-200 hover:text-white"
-                      >
-                        {link.label}
-                        {link.external && (
-                          <ArrowUpRight
-                            size={13}
-                            className="text-white/30 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/70"
-                          />
+                  {column.links.map((link) => {
+                    const style =
+                      'group inline-flex items-center gap-1 text-[15px] font-medium text-white/75 transition-colors duration-200 hover:text-white'
+
+                    // Hash links resolve against the current route, so they go
+                    // through SectionLink; real routes stay plain anchors.
+                    return (
+                      <li key={link.label}>
+                        {link.hash ? (
+                          <SectionLink hash={link.hash} className={style}>
+                            {link.label}
+                          </SectionLink>
+                        ) : (
+                          <a
+                            href={link.href}
+                            {...(link.external && {
+                              target: '_blank',
+                              rel: 'noopener noreferrer',
+                            })}
+                            className={style}
+                          >
+                            {link.label}
+                            {link.external && (
+                              <ArrowUpRight
+                                size={13}
+                                className="text-white/30 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/70"
+                              />
+                            )}
+                          </a>
                         )}
-                      </a>
-                    </li>
-                  ))}
+                      </li>
+                    )
+                  })}
                 </ul>
               </nav>
             ))}
