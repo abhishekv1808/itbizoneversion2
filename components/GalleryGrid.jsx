@@ -9,6 +9,31 @@ import { POSTERS, drawPoster } from '@/lib/posters'
 gsap.registerPlugin(ScrollTrigger)
 
 /**
+ * Crops a texture to a target aspect instead of stretching it.
+ *
+ * The wall's planes are a fixed 2:3, but the artwork is a mix of 9:16 stories,
+ * 1:1 posts, a 2819x4000 brochure and a visiting card. Without this every
+ * square post would be squeezed into portrait. Same idea as CSS object-fit:
+ * cover, expressed as a UV window.
+ */
+function cover(texture, planeAspect) {
+  const image = texture.image
+  if (!image?.width || !image?.height) return
+  const imageAspect = image.width / image.height
+
+  if (imageAspect > planeAspect) {
+    // Wider than the plane — trim the sides.
+    texture.repeat.set(planeAspect / imageAspect, 1)
+    texture.offset.set((1 - texture.repeat.x) / 2, 0)
+  } else {
+    // Taller than the plane — trim top and bottom.
+    texture.repeat.set(1, imageAspect / planeAspect)
+    texture.offset.set(0, (1 - texture.repeat.y) / 2)
+  }
+}
+
+
+/**
  * Card size on screen works out to roughly:
  *
  *     containerWidth / COLS
@@ -38,6 +63,7 @@ const CLICK_SLOP = 6
 
 const vertexShader = /* glsl */ `
   uniform float uCurve;
+  uniform float uCurveStart;
 
   varying vec2  vUv;
   varying float vDist;
@@ -46,12 +72,31 @@ const vertexShader = /* glsl */ `
     vUv = uv;
 
     vec4 world = modelMatrix * vec4(position, 1.0);
-
-    // Bend the whole field into a dome. Because each plane's corners sit at
-    // different radii they pick up their own tilt for free — no per-mesh
-    // rotation needed to make the grid look like a curved surface.
     vDist = length(world.xy);
-    world.z -= vDist * vDist * uCurve;
+
+    /*
+      The bend is confined to a band along the section's edges.
+
+      It used to be applied across the whole field, scaled by vDist squared,
+      which curves radially outward from the centre — so cards well inside the
+      frame were already tilting, and the falloff traced a circle rather than
+      the shape of a wide section.
+
+      To scope it rectangularly this projects the vertex once *unbent* to find
+      where it lands on screen, derives how close that is to the nearest
+      viewport edge, and only then applies the bend. Two projections per vertex
+      is cheap: there are COLS x ROWS = 32 planes of 12x12 segments, not a
+      character model.
+    */
+    vec4 flatClip = projectionMatrix * viewMatrix * world;
+    vec2 ndc = flatClip.xy / flatClip.w;
+
+    // 0 dead centre, 1 at the viewport edge — min() of the two axes makes the
+    // contour a rectangle rather than a circle.
+    float edge = 1.0 - min(1.0 - abs(ndc.x), 1.0 - abs(ndc.y));
+    float amount = smoothstep(uCurveStart, 1.0, edge);
+
+    world.z -= vDist * vDist * uCurve * amount;
 
     gl_Position = projectionMatrix * viewMatrix * world;
   }
@@ -65,7 +110,6 @@ const fragmentShader = /* glsl */ `
   uniform float uAspect;
   uniform float uFadeStart;
   uniform float uFadeEnd;
-
   varying vec2  vUv;
   varying float vDist;
 
@@ -76,7 +120,10 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
-    float d = roundedBox(p, vec2(uAspect, 1.0) * 0.5, 0.05);
+    // 0.11 in this space is ~16% of the card's width. At 0.05 the corners
+    // were geometrically rounded but read as square at the size a card
+    // actually draws on screen.
+    float d = roundedBox(p, vec2(uAspect, 1.0) * 0.5, 0.11);
 
     float mask = 1.0 - smoothstep(-0.005, 0.005, d);
     if (mask <= 0.001) discard;
@@ -89,6 +136,10 @@ const fragmentShader = /* glsl */ `
 
     color = mix(color, color * 1.06 + 0.02, uHover);
 
+    // Opacity is left to the radial seam fade alone. An extra rectangular
+    // dimming pass was tried here and removed: the edge treatment asked for is
+    // the geometric bend in the vertex stage, and dimming on top of it made
+    // the outer cards harder to read rather than softer.
     gl_FragColor = vec4(color, mask * fade);
   }
 `
@@ -136,16 +187,44 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
     const geometry = new THREE.PlaneGeometry(PLANE_W, PLANE_H, 12, 12)
     const meshes = []
     const textures = []
+    const loader = new THREE.TextureLoader()
+    let disposed = false
 
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
         const index = row * COLS + col
         const spec = POSTERS[index % POSTERS.length]
 
+        /*
+          The drawn composition goes up first and the real artwork replaces it
+          when it arrives. Loading synchronously is not an option — these are
+          13 files, several over 400KB — and starting from a blank plane would
+          flash an empty wall on every load.
+        */
         const texture = new THREE.CanvasTexture(drawPoster(spec))
         texture.colorSpace = THREE.SRGBColorSpace
         texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
         textures.push(texture)
+
+        if (spec.src) {
+          loader.load(
+            spec.src,
+            (loaded) => {
+              if (disposed) {
+                loaded.dispose()
+                return
+              }
+              loaded.colorSpace = THREE.SRGBColorSpace
+              loaded.anisotropy = renderer.capabilities.getMaxAnisotropy()
+              cover(loaded, PLANE_W / PLANE_H)
+              textures.push(loaded)
+              material.uniforms.uMap.value = loaded
+            },
+            undefined,
+            // Leave the drawn composition in place on failure.
+            () => {}
+          )
+        }
 
         const material = new THREE.ShaderMaterial({
           vertexShader,
@@ -161,6 +240,12 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
             uCurve: { value: 0.032 },
             uFadeStart: { value: 4.0 },
             uFadeEnd: { value: 7.2 },
+            /*
+              Where the bend starts, as a fraction of the way from the centre
+              of the viewport to its edge. 0.6 leaves the middle 60% of the
+              field perfectly flat and ramps the curve in over the outer 40%.
+            */
+            uCurveStart: { value: 0.6 },
           },
         })
 
@@ -352,6 +437,7 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
     frame = requestAnimationFrame(tick)
 
     return () => {
+      disposed = true
       cancelAnimationFrame(frame)
       resizeObserver.disconnect()
       intersectionObserver.disconnect()

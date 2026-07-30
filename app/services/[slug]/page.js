@@ -7,6 +7,8 @@ import ServiceWork from '@/components/service/ServiceWork'
 import ServiceFAQ from '@/components/service/ServiceFAQ'
 import ServiceQuote from '@/components/service/ServiceQuote'
 import ServiceShowcase from '@/components/service/ServiceShowcase'
+import DevHero from '@/components/service/dev/DevHero'
+import DevShowcase from '@/components/service/dev/DevShowcase'
 import DesignGallery from '@/components/sections/DesignGallery'
 import DesignShowcase from '@/components/sections/DesignShowcase'
 import { getService, SERVICE_SLUGS } from '@/lib/services'
@@ -22,6 +24,7 @@ const BLOCKS = {
   work: ServiceWork,
   gallery: DesignGallery,
   morph: DesignShowcase,
+  devwork: DevShowcase,
   faq: ServiceFAQ,
 }
 
@@ -82,7 +85,11 @@ export default async function ServicePage({ params }) {
         }}
       />
 
-      <ServiceHero service={service} />
+      {service.heroVariant === 'immersive' ? (
+        <DevHero />
+      ) : (
+        <ServiceHero service={service} />
+      )}
 
       {/*
         Section order comes from the service's own `layout`, so the six pages

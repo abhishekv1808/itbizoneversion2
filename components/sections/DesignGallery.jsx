@@ -140,8 +140,12 @@ function PosterGrid({ onSelect }) {
 }
 
 /**
- * Renders a poster to a canvas element on mount. The artwork is generated,
- * not fetched, so there is no <img> to point at.
+ * Shows a poster's real artwork when it has a `src`, and falls back to the
+ * generated composition when it does not.
+ *
+ * Kept as a plain <img> rather than next/image: this renders inside a lightbox
+ * that only exists after a click, so there is no layout to reserve and nothing
+ * for the optimiser to pre-size against.
  */
 function PosterImage({ poster, scale = 1, className = '' }) {
   const ref = useRef(null)
@@ -150,9 +154,24 @@ function PosterImage({ poster, scale = 1, className = '' }) {
     const host = ref.current
     if (!host) return
 
-    const canvas = drawPoster(poster, scale)
-    canvas.className = 'h-full w-full object-cover'
-    host.replaceChildren(canvas)
+    if (poster.src) {
+      const img = document.createElement('img')
+      img.src = poster.src
+      img.alt = `${poster.title} — ${poster.category} for ${poster.client ?? 'client'}`
+      /*
+        Sized by the call site, not here — the same contract the generated
+        canvas has. `h-full` was wrong: the wrapper span has no resolved
+        height, so the image sized itself by width, overflowed and was clipped
+        to the top third of the poster.
+      */
+      img.className = 'block h-auto w-auto max-w-full'
+      img.draggable = false
+      host.replaceChildren(img)
+    } else {
+      const canvas = drawPoster(poster, scale)
+      canvas.className = 'h-full w-full object-cover'
+      host.replaceChildren(canvas)
+    }
 
     return () => host.replaceChildren()
   }, [poster, scale])
@@ -188,7 +207,7 @@ function Lightbox({ poster, onClose }) {
             <PosterImage
               poster={poster}
               scale={2}
-              className="max-h-[70vh] rounded-2xl shadow-2xl [&>canvas]:h-auto [&>canvas]:max-h-[70vh] [&>canvas]:w-auto"
+              className="max-h-[70vh] rounded-2xl shadow-2xl [&>canvas]:h-auto [&>canvas]:max-h-[70vh] [&>canvas]:w-auto [&>img]:h-auto [&>img]:max-h-[70vh] [&>img]:w-auto"
             />
 
             <div className="text-center text-white">

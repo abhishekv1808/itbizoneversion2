@@ -2,6 +2,7 @@ import Hero from '@/components/Hero'
 import Introduction from '@/components/sections/Introduction'
 import Services from '@/components/sections/Services'
 import Portfolio from '@/components/sections/Portfolio'
+import CaseStudies from '@/components/sections/CaseStudies'
 import DesignGallery from '@/components/sections/DesignGallery'
 import TechStack from '@/components/sections/TechStack'
 import Clients from '@/components/sections/Clients'
@@ -30,6 +31,7 @@ export default function Page() {
       <Introduction />
       <Services />
       <Portfolio />
+      <CaseStudies />
       <DesignGallery />
       <TechStack />
       <Clients />

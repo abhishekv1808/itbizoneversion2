@@ -35,7 +35,11 @@ const COLUMNS = [
   },
 ]
 
-const LEGAL = ['Privacy Policy', 'Terms of Service', 'Cookie Policy']
+const LEGAL = [
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms of Service', href: '/terms-of-service' },
+  { label: 'Cookie Policy', href: '#' },
+]
 
 export default function Footer() {
   return (
@@ -165,12 +169,12 @@ export default function Footer() {
           </p>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {LEGAL.map((item) => (
-              <li key={item}>
+              <li key={item.label}>
                 <a
-                  href="#"
+                  href={item.href}
                   className="transition-colors duration-200 hover:text-white"
                 >
-                  {item}
+                  {item.label}
                 </a>
               </li>
             ))}

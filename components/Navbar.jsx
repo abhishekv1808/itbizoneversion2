@@ -34,8 +34,47 @@ const linkItem = {
   exit: { opacity: 0, y: 12, transition: { duration: 0.2 } },
 }
 
+/**
+ * True while a section that opted into `data-nav="invert"` sits under the
+ * fixed header.
+ *
+ * The header floats over whatever is beneath it, so on a dark hero the black
+ * wordmark disappeared entirely. Rather than special-casing that one page, any
+ * section can declare itself dark and the header adapts.
+ *
+ * The rootMargin collapses the observer's viewport to a 1px band at the very
+ * top — the only strip the header actually overlaps — so a dark section
+ * further down the page does not trigger it.
+ */
+function useOnDarkSection() {
+  const [onDark, setOnDark] = useState(false)
+
+  useEffect(() => {
+    const targets = document.querySelectorAll('[data-nav="invert"]')
+    if (!targets.length) return
+
+    const seen = new Set()
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) seen.add(entry.target)
+          else seen.delete(entry.target)
+        }
+        setOnDark(seen.size > 0)
+      },
+      { rootMargin: '0px 0px -100% 0px', threshold: 0 }
+    )
+
+    targets.forEach((t) => io.observe(t))
+    return () => io.disconnect()
+  }, [])
+
+  return onDark
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const onDark = useOnDarkSection()
   const lenis = useLenis()
 
   // Lenis owns the scroll position, so it has to be the thing that stops.
@@ -60,7 +99,9 @@ export default function Navbar() {
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-[19px] md:px-8 lg:px-9">
           <a
             href="/"
-            className="text-[26px] leading-none font-semibold tracking-[-0.06em] md:text-[30px]"
+            className={`text-[26px] leading-none font-semibold tracking-[-0.06em] transition-colors duration-300 md:text-[30px] ${
+              onDark && !open ? 'text-white' : 'text-ink'
+            }`}
           >
             ITBIZ<span className="font-serif italic">one</span>
           </a>
@@ -71,7 +112,9 @@ export default function Navbar() {
             aria-label={open ? 'Close menu' : 'Open menu'}
             whileHover={{ y: -1, boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-white"
+            className={`inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-medium transition-colors duration-300 ${
+              onDark && !open ? 'bg-white text-ink' : 'bg-ink text-white'
+            }`}
           >
             Menu
             <motion.span

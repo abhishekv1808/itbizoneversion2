@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import ScrollMorphHero from '@/components/ui/scroll-morph-hero'
-import { POSTERS, drawPoster } from '@/lib/posters'
+import { POSTERS, POSTER_RATIO, drawPoster } from '@/lib/posters'
 
 // Twenty reads well in the ring and the arc; the full set of 32 crowds both.
 const COUNT = 20
@@ -27,7 +27,11 @@ export default function DesignShowcase() {
     setItems(
       POSTERS.slice(0, COUNT).map((poster) => ({
         ...poster,
-        src: poster.src ?? drawPoster(poster, 0.6).toDataURL('image/png'),
+        // Drawn at 9:16 to match the card, so object-cover has nothing to
+        // crop and the caption block survives intact.
+        src:
+          poster.src ??
+          drawPoster(poster, 0.75, POSTER_RATIO.story).toDataURL('image/png'),
       }))
     )
   }, [])

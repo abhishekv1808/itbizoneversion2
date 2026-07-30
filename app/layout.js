@@ -5,6 +5,7 @@ import Analytics from '@/components/Analytics'
 import WhatsAppFab from '@/components/ui/WhatsAppFab'
 import Footer from '@/components/sections/Footer'
 import { SITE, SITE_URL } from '@/lib/site'
+import { HERO_IMAGE } from '@/lib/assets'
 import './globals.css'
 // Lenis' own rules: unpins html/body height, contains overscroll inside
 // [data-lenis-prevent] subtrees, and kills iframe pointer capture mid-scroll.
@@ -62,6 +63,7 @@ export default function RootLayout({ children }) {
     // same scroll position and fight each other on anchor jumps.
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${sourceSerif.variable} ${cedarville.variable}`}
     >
       <head>
@@ -69,6 +71,19 @@ export default function RootLayout({ children }) {
           rel="preconnect"
           href="https://images.higgs.ai"
           crossOrigin="anonymous"
+        />
+        {/*
+          The home hero's background image is the Largest Contentful Paint
+          element — it is full-bleed, so nothing on the page is larger. It is
+          also a CSS background on a third-party host, which means the browser
+          cannot discover it until stylesheets have resolved. Preloading it is
+          the single biggest lever on home-page LCP.
+        */}
+        <link
+          rel="preload"
+          as="image"
+          href={HERO_IMAGE}
+          fetchPriority="high"
         />
       </head>
       <body className="bg-bg text-ink font-sans tracking-[-0.02em] antialiased overflow-x-hidden">

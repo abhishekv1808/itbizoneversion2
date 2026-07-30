@@ -4,8 +4,19 @@
   /* ── Breakpoints ───────────────────────────────────────────────
      Overridden to match the design's cutoffs. Tailwind is mobile-first,
      so the spec's "< 810px" rules are the base layer, and md/lg add on. */
-  --breakpoint-md: 810px;
-  --breakpoint-lg: 1200px;
+  /*
+    Expressed in rem, not px, and that matters more than it looks:
+    50.625rem = 810px and 75rem = 1200px at the default root size.
+
+    Tailwind emits breakpoint media queries ordered by value, but it can only
+    compare values that share a unit. Holding these two in px while sm/xl/2xl
+    stayed in rem put the px pair ahead of all three rem ones, so `sm:` beat
+    `md:` and `lg:` on any equal-specificity conflict — a card set to
+    lg:w-[520px] silently rendered at its sm:w-[420px] value. In rem all five
+    sort properly: 40 · 50.625 · 75 · 80 · 96.
+  */
+  --breakpoint-md: 50.625rem;
+  --breakpoint-lg: 75rem;
 
   /* ── Palette ─────────────────────────────────────────────────── */
   --color-bg: #ffffff;
@@ -52,6 +63,17 @@
     black 88%,
     transparent 100%
   );
+}
+
+/* Horizontal rails scroll natively — that keeps touch, trackpad and keyboard
+   working and leaves Lenis in charge of the page — but the native bar sits
+   under the cards and undoes the spacing. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Bottom-of-hero progressive blur: the blur is masked so it ramps in

@@ -1,5 +1,6 @@
 import { SITE_URL } from '@/lib/site'
 import { SERVICE_SLUGS } from '@/lib/services'
+import { CASE_STUDY_SLUGS } from '@/lib/caseStudies'
 
 /**
  * Served at /sitemap.xml.
@@ -31,6 +32,24 @@ export default function sitemap() {
       changeFrequency: 'yearly',
       priority: 0.8,
     },
+    {
+      url: `${SITE_URL}/privacy-policy`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/terms-of-service`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    ...CASE_STUDY_SLUGS.map((slug) => ({
+      url: `${SITE_URL}/case-studies/${slug}`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.7,
+    })),
     ...SERVICE_SLUGS.map((slug) => ({
       url: `${SITE_URL}/services/${slug}`,
       lastModified: now,

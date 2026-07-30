@@ -22,8 +22,20 @@ import useReducedMotion from '@/lib/useReducedMotion'
  * ──────────────────────────────────────────────────────────────────────────
  */
 
-const CARD_W = 62
-const CARD_H = 93 // 2:3, matching the poster artwork
+// 9:16 — Instagram story / WhatsApp status. The artwork is drawn at the same
+// ratio in DesignShowcase, so nothing is cropped.
+const CARD_W = 108
+const CARD_H = 192
+
+/**
+ * Clear space between neighbouring cards in the arc, in px.
+ *
+ * This is the knob for how many cards are on stage at once: the count is
+ * roughly stageWidth / (CARD_W × arcScale + CARD_GAP). At 108 × 1.3 that is
+ * ~10–11 across 1440px. More cards on stage needs a smaller card, not a
+ * smaller gap — dropping the gap to 0 only buys one more.
+ */
+const CARD_GAP = 8
 
 const lerp = (a, b, t) => a * (1 - t) + b * t
 
@@ -51,7 +63,7 @@ function FlipCard({ item, motionValues, index }) {
       >
         {/* Front — the artwork */}
         <div
-          className="absolute inset-0 overflow-hidden rounded-md border border-soft bg-panel shadow-[0_4px_16px_rgba(0,0,0,0.10)]"
+          className="absolute inset-0 overflow-hidden rounded-xl border border-soft bg-panel shadow-[0_4px_16px_rgba(0,0,0,0.10)]"
           style={{ backfaceVisibility: 'hidden' }}
         >
           {item.src ? (
@@ -70,15 +82,16 @@ function FlipCard({ item, motionValues, index }) {
 
         {/* Back — the caption, so the flip reveals something worth reading */}
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-1 overflow-hidden rounded-md bg-ink px-2 text-center"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl bg-ink px-3 text-center"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
-          <span className="text-[7px] font-semibold tracking-[0.18em] text-white/45 uppercase">
+          <span className="text-[9px] font-semibold tracking-[0.18em] text-white/45 uppercase">
             {item.category}
           </span>
-          <span className="text-[9px] leading-tight font-medium text-white">
+          <span className="text-[13px] leading-tight font-medium text-white">
             {item.title}
           </span>
+          <span className="mt-1 text-[9px] text-white/35">{item.id}</span>
         </div>
       </motion.div>
       <span className="sr-only">{`${item.title}, ${item.category}`}</span>
@@ -147,9 +160,16 @@ export default function ScrollMorphHero({
     offset: ['start start', 'end end'],
   })
 
-  // Circle holds briefly, morphs to the arc, then the arc sweeps.
-  const morphRaw = useTransform(scrollYProgress, [0.05, 0.4], [0, 1])
-  const sweepRaw = useTransform(scrollYProgress, [0.4, 0.95], [0, 1])
+  /*
+    The ring holds for the first sixth of the track before anything moves.
+
+    Starting the morph at 0.05 meant the ring was already being pulled toward
+    the arc — whose centre is a radius away — within a few pixels of scrolling.
+    It deformed out of round immediately and cards drifted across the heading
+    while the intro copy was still the thing being read.
+  */
+  const morphRaw = useTransform(scrollYProgress, [0.16, 0.46], [0, 1])
+  const sweepRaw = useTransform(scrollYProgress, [0.46, 0.96], [0, 1])
 
   const morphSpring = useSpring(morphRaw, { stiffness: 40, damping: 20 })
   const sweepSpring = useSpring(sweepRaw, { stiffness: 40, damping: 20 })
@@ -171,7 +191,9 @@ export default function ScrollMorphHero({
       if (event.pointerType !== 'mouse') return
       const rect = el.getBoundingClientRect()
       const normalised = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      setParallax(normalised * 60)
+      // Smaller than it was: at story proportions a 60px slide is enough to
+      // push the outermost cards off the edge.
+      setParallax(normalised * 38)
     }
 
     el.addEventListener('pointermove', onMove)
@@ -222,7 +244,9 @@ export default function ScrollMorphHero({
                   : {}
               }
               transition={{ duration: 0.9 }}
-              className="max-w-[520px] text-[clamp(26px,6vw,32px)] leading-[1.08] font-semibold tracking-[-0.05em] md:text-[clamp(34px,4vw,44px)]"
+              // Narrow enough to sit inside the ring's clear hole
+              // (R − CARD_H × ringScale / 2), which is ~500px on desktop.
+              className="max-w-[380px] text-[clamp(24px,5.5vw,30px)] leading-[1.1] font-semibold tracking-[-0.05em] md:max-w-[420px] md:text-[clamp(30px,3.4vw,38px)]"
             >
               {introTitle}
             </motion.h2>
@@ -257,7 +281,7 @@ export default function ScrollMorphHero({
               if (phase === 'scatter') {
                 target = scatter[i]
               } else if (phase === 'line') {
-                const spacing = 68
+                const spacing = CARD_W + 12
                 target = {
                   x: i * spacing - (total * spacing) / 2,
                   y: 0,
@@ -269,8 +293,39 @@ export default function ScrollMorphHero({
                 const isMobile = size.width < 810
                 const minDimension = Math.min(size.width, size.height)
 
-                // Ring
-                const ringRadius = Math.min(minDimension * 0.34, 320)
+                /*
+                  Ring, solved for the largest card that fits rather than a
+                  hardcoded scale.
+
+                  Two constraints, both linear in the scale s:
+                    spacing  R = total × (CARD_W·s + CARD_GAP) / 2π
+                    bounds   R + (CARD_H·s) / 2 ≤ ringBound
+
+                  Substituting the first into the second and solving for s
+                  gives the biggest cards the stage can hold while keeping them
+                  apart. Hardcoding 0.5 left them far smaller than necessary
+                  and pulled the ring's hole in so tight that the cards
+                  covered the heading.
+
+                  Cards sit tangentially, so their long side runs radially:
+                  the clear hole is R − CARD_H·s / 2, which is what the intro
+                  copy has to fit inside.
+                */
+                const ringBound = Math.min(
+                  size.height / 2 - 16,
+                  // A little horizontal bleed is fine; the stage clips it.
+                  size.width / 2 + 64
+                )
+                const perScale = (total * CARD_W) / (2 * Math.PI) + CARD_H / 2
+                const perGap = (total * CARD_GAP) / (2 * Math.PI)
+
+                const ringScale = Math.max(
+                  0.35,
+                  Math.min((ringBound - perGap) / perScale, 1)
+                )
+                const ringRadius =
+                  (total * (CARD_W * ringScale + CARD_GAP)) / (2 * Math.PI)
+                void minDimension
                 const ringAngle = (i / total) * 360
                 const ringRad = (ringAngle * Math.PI) / 180
                 const ring = {
@@ -291,37 +346,78 @@ export default function ScrollMorphHero({
                   Radius is chosen so the chord spans the stage rather than
                   overshooting it: half-width = radius × sin(spread / 2).
                 */
-                const spread = isMobile ? 104 : 76
-                const arcRadius = isMobile
-                  ? Math.min(size.width * 1.5, size.height * 0.85)
-                  : Math.min(size.width * 0.75, size.height * 1.2)
+                /*
+                  Spacing is the input, spread is the output.
 
-                // Apex sits only slightly above centre. Higher than this and
-                // the tallest cards run up behind the heading block.
-                const apexFromCentre = -size.height * (isMobile ? 0.06 : 0.04)
+                  Previously step = spread / (total − 1) with spread fixed,
+                  which decoupled spacing from card size entirely: enlarging
+                  the cards widened them to 140px while leaving a 64px pitch,
+                  so each one covered half its neighbour, and adding a card
+                  only tightened it further.
+
+                  Deriving step from a target pixel pitch inverts that —
+                  spacing is guaranteed at any card size or count, and the
+                  spread grows instead of squeezing. The arc then runs wider
+                  than the stage, so a window of it is visible and the sweep
+                  carries the visitor along it.
+                */
+                const arcScale = isMobile ? 1.15 : 1.5
+                const pitch = CARD_W * arcScale + CARD_GAP
+                const arcRadius = isMobile ? 1000 : 2200
+
+                const step = ((pitch / arcRadius) * 180) / Math.PI
+                const halfWidth = size.width / 2
+
+                // Angular width of the on-stage window, and how many cards
+                // that holds. x = radius × sin(δ), so the window edge is where
+                // sin(δ) reaches halfWidth / radius.
+                const windowDeg =
+                  (2 * Math.asin(Math.min(halfWidth / arcRadius, 1)) * 180) /
+                  Math.PI
+                const visible = Math.max(windowDeg / step, 1)
+
+                // Which card sits at the apex. Clamped half a window in from
+                // each end so the frame is never half empty at the extremes.
+                const minCentre = visible / 2
+                const maxCentre = Math.max(total - 1 - visible / 2, minCentre)
+                const centreIndex = lerp(minCentre, maxCentre, sweep)
+
+                // Just below centre: high enough that the end cards clear the
+                // stage floor, low enough that the apex clears the heading.
+                const apexFromCentre = size.height * 0.022
                 const arcCentre = apexFromCentre + arcRadius
 
-                const startAngle = -90 - spread / 2
-                const step = spread / Math.max(total - 1, 1)
-
-                // Half a spread of travel: early cards leave as later ones
-                // arrive, without emptying the frame.
-                const angle = startAngle + i * step - sweep * spread * 0.5
-
+                const offset = i - centreIndex
+                const angle = -90 + offset * step
                 const arcRad = (angle * Math.PI) / 180
+
+                /*
+                  Focus falloff and edge fade, both measured in cards from the
+                  apex rather than in pixels, so they track the spacing.
+                */
+                const reach = Math.max(visible / 2, 1)
+                const t = Math.min(Math.abs(offset) / reach, 2)
+                const focusScale = 1 - Math.min(t, 1) * 0.1
+                const focusOpacity = 1 - Math.min(t, 1) * 0.42
+                // Past the window edge, ease out rather than clip.
+                const edgeFade = t > 1 ? Math.max(0, 1 - (t - 1) * 2.5) : 1
+
                 const arc = {
                   x: Math.cos(arcRad) * arcRadius + parallax,
                   y: Math.sin(arcRad) * arcRadius + arcCentre,
                   rotation: angle + 90,
-                  scale: isMobile ? 1.2 : 1.6,
+                  scale: arcScale * focusScale,
+                  opacity: focusOpacity * edgeFade,
                 }
 
                 target = {
                   x: lerp(ring.x, arc.x, morph),
                   y: lerp(ring.y, arc.y, morph),
                   rotation: lerp(ring.rotation, arc.rotation, morph),
-                  scale: lerp(1, arc.scale, morph),
-                  opacity: 1,
+                  scale: lerp(ringScale, arc.scale, morph),
+                  // Ring shows every card at full weight; the falloff only
+                  // applies once the arc has formed.
+                  opacity: lerp(1, arc.opacity, morph),
                 }
               }
 

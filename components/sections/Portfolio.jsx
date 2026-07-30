@@ -41,15 +41,36 @@ export default function Portfolio() {
       // function so `invalidateOnRefresh` re-reads it after a resize.
       const distance = () => Math.max(track.scrollWidth - viewport.clientWidth, 0)
 
+      /*
+        Vertical scroll consumed by the pin, which is deliberately less than the
+        horizontal distance travelled.
+
+        At 58vw the eight cards make a ~6900px track, so a 1:1 mapping pinned
+        the section for ~5450px — roughly six screens of scrolling to pass one
+        section. 0.62 keeps it substantial without feeling endless; the cards
+        simply move a little faster than the wheel.
+      */
+      const scrollLength = () => distance() * 0.62
+
       const tween = gsap.to(track, {
         x: () => -distance(),
         ease: 'none',
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: () => `+=${distance()}`,
+          end: () => `+=${scrollLength()}`,
           pin: true,
-          scrub: 1,
+          /*
+            Was 1. A full second of smoothing over a 5450px pin meant a fast
+            fling outran the tween: the trigger ended, the section unpinned and
+            the middle cards were never drawn — only the last two arrived.
+            0.3 still glides but tracks the scroll closely enough that nothing
+            is skipped.
+          */
+          scrub: 0.3,
+          // Jumps the tween to its end state if the scroll blows past the
+          // trigger, so the track can never be left stranded mid-travel.
+          fastScrollEnd: true,
           // Without this a resize keeps the stale scroll distance and the last
           // card ends up unreachable.
           invalidateOnRefresh: true,
@@ -124,7 +145,18 @@ export default function Portfolio() {
             {PROJECTS.map((project) => (
               <article
                 key={project.id}
-                className="group flex w-[78vw] shrink-0 flex-col overflow-hidden rounded-3xl border border-soft bg-bg transition-colors duration-300 hover:bg-chip sm:w-[58vw] md:w-[400px] lg:w-[440px]"
+                /*
+                  58vw from sm upward, deliberately.
+
+                  This previously read `sm:w-[58vw] md:w-[400px] lg:w-[440px]`,
+                  but the md and lg values never applied: while md/lg were set
+                  in px and sm in rem, Tailwind emitted sm last and it won every
+                  conflict above 1200px. Fixing that ordering activated the two
+                  overrides for the first time and shrank these cards from
+                  ~835px to 440px. The wide card is the intended look, so the
+                  dead overrides are gone rather than the ordering re-broken.
+                */
+                className="group flex w-[78vw] shrink-0 flex-col overflow-hidden rounded-3xl border border-soft bg-bg transition-colors duration-300 hover:bg-chip sm:w-[58vw]"
               >
                 {/* Stands in for a screenshot: the client wordmark set large,
                     which reads as a lockup rather than a missing image. */}
