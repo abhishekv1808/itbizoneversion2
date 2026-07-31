@@ -58,7 +58,9 @@ export default function WhatsAppFab() {
           exit={{ opacity: 0, scale: 0.8, y: 12 }}
           whileHover={{ y: -2 }}
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="group fixed right-5 bottom-5 z-90 inline-flex items-center gap-2.5 rounded-full bg-[#25D366] py-3 pr-5 pl-3.5 text-white shadow-[0_6px_24px_rgba(0,0,0,0.18)] md:right-8 md:bottom-8"
+          // Hidden below md: MobileCtaBar owns WhatsApp on phones, and two entry
+          // points a centimetre apart is a bug that looks deliberate.
+          className="group fixed right-5 bottom-5 z-90 hidden items-center gap-2.5 rounded-full bg-[#25D366] py-3 pr-5 pl-3.5 text-white shadow-[0_6px_24px_rgba(0,0,0,0.18)] md:inline-flex md:right-8 md:bottom-8"
         >
           {/* WhatsApp's own mark, in white on the brand green. */}
           <svg

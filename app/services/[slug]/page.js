@@ -9,6 +9,8 @@ import ServiceQuote from '@/components/service/ServiceQuote'
 import ServiceShowcase from '@/components/service/ServiceShowcase'
 import DevHero from '@/components/service/dev/DevHero'
 import DevShowcase from '@/components/service/dev/DevShowcase'
+import Responsive from '@/components/sections/Responsive'
+import CaseStudies from '@/components/sections/CaseStudies'
 import DesignGallery from '@/components/sections/DesignGallery'
 import DesignShowcase from '@/components/sections/DesignShowcase'
 import { getService, SERVICE_SLUGS } from '@/lib/services'
@@ -25,6 +27,11 @@ const BLOCKS = {
   gallery: DesignGallery,
   morph: DesignShowcase,
   devwork: DevShowcase,
+  // Both are home-page sections reused verbatim rather than reimplemented:
+  // they read from PROJECTS and CASE_STUDIES, so they stay correct wherever
+  // they are mounted and neither ignores the `service` prop it is handed.
+  responsive: Responsive,
+  cases: CaseStudies,
   faq: ServiceFAQ,
 }
 

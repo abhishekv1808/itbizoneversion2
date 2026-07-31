@@ -106,10 +106,10 @@ export default async function CaseStudyPage({ params }) {
           <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div className="max-w-[760px]">
               <Eyebrow>{project.sector}</Eyebrow>
-              <h1 className="mt-6 text-[clamp(40px,11vw,50px)] leading-[1.03] font-semibold tracking-[-0.065em] md:text-[clamp(56px,7vw,72px)] lg:text-[80px]">
+              <h1 className="mt-6 text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.03] md:tracking-[-0.065em] md:text-[clamp(56px,7vw,72px)] lg:text-[80px]">
                 {project.name}
               </h1>
-              <p className="mt-6 max-w-[520px] text-[17px] leading-[1.45] text-muted">
+              <p className="mt-6 max-w-[520px] text-[14px] md:text-[17px] leading-[1.45] text-muted">
                 {tagline}
               </p>
             </div>
@@ -272,7 +272,7 @@ export default async function CaseStudyPage({ params }) {
                 <span className="text-[13px] font-medium text-quiet">
                   Next case study
                 </span>
-                <h2 className="mt-4 text-[clamp(30px,8vw,36px)] leading-[1.05] font-semibold tracking-[-0.055em] transition-transform duration-300 group-hover:translate-x-1 md:text-[48px]">
+                <h2 className="mt-4 text-[clamp(24px,6.5vw,30px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.05] md:tracking-[-0.055em] transition-transform duration-300 group-hover:translate-x-1 md:text-[48px]">
                   {next.project.name}
                 </h2>
                 <p className="mt-3 max-w-[420px] text-[15px] text-muted">

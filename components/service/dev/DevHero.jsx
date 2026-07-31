@@ -114,7 +114,7 @@ export default function DevHero() {
 
         <h1
           ref={headlineRef}
-          className="mt-7 max-w-[620px] text-[clamp(42px,12vw,50px)] leading-[1.02] font-semibold tracking-[-0.065em] md:text-[clamp(58px,7.2vw,72px)] lg:text-[80px]"
+          className="mt-7 max-w-[620px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.02] md:tracking-[-0.065em] md:text-[clamp(58px,7.2vw,72px)] lg:text-[80px]"
         >
           We build websites that{' '}
           <span className="font-serif font-semibold italic tracking-[-0.07em]">
@@ -125,7 +125,7 @@ export default function DevHero() {
 
         <p
           data-reveal="sub"
-          className="mt-7 max-w-[500px] text-[17px] leading-[1.5] text-muted"
+          className="mt-7 max-w-[500px] text-[14px] md:text-[17px] leading-[1.5] text-muted"
         >
           Modern, high-performance websites designed to convert visitors into
           customers while delivering an unforgettable digital experience.
@@ -138,7 +138,7 @@ export default function DevHero() {
           <Magnetic className="w-full md:w-auto">
             <a
               href="/contact"
-              className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-ink px-8 text-[15px] font-semibold text-white transition-shadow duration-300 hover:shadow-[0_8px_28px_rgba(0,0,0,0.18)] md:w-auto"
+              className="group inline-flex h-12 md:h-14 w-full items-center justify-center gap-2 rounded-full bg-ink px-8 text-[15px] font-semibold text-white transition-shadow duration-300 hover:shadow-[0_8px_28px_rgba(0,0,0,0.18)] md:w-auto"
             >
               Start your project
               <ArrowUpRight
@@ -151,7 +151,7 @@ export default function DevHero() {
           <Magnetic className="w-full md:w-auto">
             <a
               href="#work"
-              className="inline-flex h-14 w-full items-center justify-center rounded-full border border-soft bg-bg/70 px-8 text-[15px] font-semibold text-ink backdrop-blur-sm transition-colors duration-300 hover:bg-bg md:w-auto"
+              className="inline-flex h-12 md:h-14 w-full items-center justify-center rounded-full border border-soft bg-bg/70 px-8 text-[15px] font-semibold text-ink backdrop-blur-sm transition-colors duration-300 hover:bg-bg md:w-auto"
             >
               View our work
             </a>

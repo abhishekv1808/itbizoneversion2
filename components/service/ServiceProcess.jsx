@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Section from '@/components/ui/Section'
 import Reveal, { RevealGroup, revealItem } from '@/components/ui/Reveal'
 import { Accent, Eyebrow, SectionTitle } from '@/components/ui/Type'
+import { TOOL_LOGOS } from '@/lib/techLogos'
 
 export default function ServiceProcess({ service }) {
   return (
@@ -45,15 +46,44 @@ export default function ServiceProcess({ service }) {
         <h3 className="text-[13px] font-medium text-quiet">
           {service.stackLabel}
         </h3>
+        {/*
+          The vendor's own mark where one is licensed, the name alone where it
+          is not. Adobe and Amazon had their glyphs withdrawn from
+          simple-icons at their own request, so Illustrator, Photoshop,
+          InDesign, After Effects and AWS are wordmarks by necessity rather
+          than by choice — hand-tracing a replacement would be passing off an
+          imitation as the vendor's mark.
+        */}
         <ul className="mt-5 flex flex-wrap gap-2">
-          {service.stack.map((tool) => (
-            <li
-              key={tool}
-              className="rounded-full border border-soft bg-bg px-4 py-2 text-sm font-medium"
-            >
-              {tool}
-            </li>
-          ))}
+          {service.stack.map((tool) => {
+            const logo = TOOL_LOGOS[tool]
+
+            return (
+              <li
+                key={tool}
+                className="inline-flex items-center gap-2 rounded-full border border-soft bg-bg py-2 pr-4 pl-3 text-sm font-medium"
+              >
+                {logo?.path ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="size-4 shrink-0"
+                    fill={logo.hex}
+                  >
+                    <path d={logo.path} />
+                  </svg>
+                ) : (
+                  /* Keeps the chip's left inset identical whether or not a
+                     mark exists, so a mixed row still aligns. */
+                  <span
+                    aria-hidden="true"
+                    className="size-1.5 shrink-0 rounded-full bg-line"
+                  />
+                )}
+                {tool}
+              </li>
+            )
+          })}
         </ul>
       </Reveal>
     </Section>

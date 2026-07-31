@@ -41,6 +41,21 @@ const CLIENTS = [
 // final row once the wall is full.
 const WALL_SLOTS = 48
 
+/*
+  How many of those slots are actually shown, per breakpoint.
+
+  The grid is 2 / 4 / 6 columns, so rendering all 48 everywhere gave a phone
+  twenty-four rows — 3.8 screens, of which three were empty placeholder dots.
+  The wall is meant to read as room to grow, not as a scroll obstacle.
+
+  These keep it six rows wide at every size: 12 at two columns, 24 at four,
+  the full 48 at six. Extra slots are hidden with CSS rather than dropped from
+  the array, so the server and the client render the same markup and the count
+  changes on resize without a re-render.
+*/
+const VISIBLE_TO_MD = 12
+const VISIBLE_TO_LG = 24
+
 export default function Clients() {
   const gridRef = useRef(null)
   const reducedMotion = useReducedMotion()
@@ -97,7 +112,13 @@ export default function Clients() {
             <div
               key={client?.name ?? `empty-${i}`}
               data-cell
-              className="flex aspect-[3/2] items-center justify-center bg-bg px-3 transition-colors duration-300 hover:bg-chip"
+              className={`flex aspect-[3/2] items-center justify-center bg-bg px-3 transition-colors duration-300 hover:bg-chip ${
+                i >= VISIBLE_TO_LG
+                  ? 'max-lg:hidden'
+                  : i >= VISIBLE_TO_MD
+                    ? 'max-md:hidden'
+                    : ''
+              }`}
             >
               {client ? (
                 <span

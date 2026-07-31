@@ -47,7 +47,10 @@ export default function ServiceFAQ({ service }) {
                       aria-expanded={isOpen}
                       className="flex w-full items-start justify-between gap-6 py-5 text-left"
                     >
-                      <span className="text-[17px] leading-snug font-medium tracking-[-0.02em] md:text-[19px]">
+                      {/* 15px on phones. At 17 a question ran to three lines
+                          and made every accordion row 87px tall before it was
+                          even opened. */}
+                      <span className="text-[15px] leading-snug font-medium tracking-[-0.02em] md:text-[19px]">
                         {faq.q}
                       </span>
                       <motion.span

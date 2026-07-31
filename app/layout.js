@@ -2,6 +2,7 @@ import { Inter, Source_Serif_4, Cedarville_Cursive } from 'next/font/google'
 import SmoothScroll from '@/components/SmoothScroll'
 import Navbar from '@/components/Navbar'
 import Analytics from '@/components/Analytics'
+import MobileCtaBar from '@/components/ui/MobileCtaBar'
 import WhatsAppFab from '@/components/ui/WhatsAppFab'
 import Footer from '@/components/sections/Footer'
 import { SITE, SITE_URL } from '@/lib/site'
@@ -86,7 +87,10 @@ export default function RootLayout({ children }) {
           fetchPriority="high"
         />
       </head>
-      <body className="bg-bg text-ink font-sans tracking-[-0.02em] antialiased overflow-x-hidden">
+      {/* pb below md reserves the height of MobileCtaBar. A fixed element
+          cannot push content, so without this the bar sits on top of the last
+          row of the footer. */}
+      <body className="bg-bg text-ink font-sans tracking-[-0.02em] antialiased overflow-x-hidden pb-[76px] md:pb-0">
         {/* Chrome lives here rather than in each page, so every route —
             home and the service pages — shares one nav and footer. */}
         <SmoothScroll>
@@ -94,8 +98,9 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <Footer />
         </SmoothScroll>
-        {/* Outside SmoothScroll: both are fixed-position and must not be
+        {/* Outside SmoothScroll: all are fixed-position and must not be
             affected by the scroll wrapper's transforms. */}
+        <MobileCtaBar />
         <WhatsAppFab />
         <Analytics />
       </body>

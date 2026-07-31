@@ -39,11 +39,11 @@ export default function TermsOfServicePage() {
             <span className="text-muted">Terms of Service</span>
           </nav>
 
-          <h1 className="mt-8 max-w-[820px] text-[clamp(40px,11vw,50px)] leading-[1.04] font-semibold tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
+          <h1 className="mt-8 max-w-[820px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.04] md:tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
             Terms of <Accent>Service</Accent>
           </h1>
 
-          <p className="mt-7 max-w-[520px] text-[17px] leading-[1.45] text-muted">
+          <p className="mt-7 max-w-[520px] text-[14px] md:text-[17px] leading-[1.45] text-muted">
             Please read these terms carefully before using our website or
             engaging our services. By accessing this site, you agree to be bound
             by these terms.
@@ -58,7 +58,7 @@ export default function TermsOfServicePage() {
       {/* ── Body ─────────────────────────────────────────── */}
       <section className="px-6 pb-24 md:px-9 md:pb-32">
         <div className="mx-auto w-full max-w-[820px]">
-          <article className="prose-legal flex flex-col gap-12 text-[16px] leading-[1.7] text-muted [&_h2]:mb-4 [&_h2]:text-[22px] [&_h2]:font-semibold [&_h2]:tracking-[-0.03em] [&_h2]:text-ink [&_h3]:mb-2 [&_h3]:text-[17px] [&_h3]:font-semibold [&_h3]:text-ink [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3 [&_li]:mb-1.5">
+          <article className="prose-legal flex flex-col gap-12 text-[16px] leading-[1.7] text-muted [&_h2]:mb-4 [&_h2]:text-[22px] [&_h2]:font-semibold [&_h2]:tracking-[-0.03em] [&_h2]:text-ink [&_h3]:mb-2 [&_h3]:text-[14px] md:text-[17px] [&_h3]:font-semibold [&_h3]:text-ink [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3 [&_li]:mb-1.5">
             {/* 1 */}
             <div>
               <h2>1. Definitions</h2>

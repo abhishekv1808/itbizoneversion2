@@ -97,7 +97,9 @@ export default function Navbar() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-100">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-[19px] md:px-8 lg:px-9">
+        {/* Matched to Section's px-6 / md:px-9. The logo previously sat 4px
+            inside the content it floats over at every breakpoint. */}
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-[17px] md:px-9">
           {/* The colour swap that used to be text-white/text-ink is now the
               reversed artwork — same trigger, same two states. */}
           <a href="/" aria-label="ITBIZONE — home" className="inline-flex">

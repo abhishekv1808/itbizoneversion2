@@ -42,11 +42,11 @@ export default function ContactPage() {
             <span className="text-muted">Contact</span>
           </nav>
 
-          <h1 className="mt-8 max-w-[820px] text-[clamp(40px,11vw,50px)] leading-[1.04] font-semibold tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
+          <h1 className="mt-8 max-w-[820px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.04] md:tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
             Let&rsquo;s talk about what you&rsquo;re <Accent>building</Accent>.
           </h1>
 
-          <p className="mt-7 max-w-[520px] text-[17px] leading-[1.45] text-muted">
+          <p className="mt-7 max-w-[520px] text-[14px] md:text-[17px] leading-[1.45] text-muted">
             Send the brief and you get an itemised quotation, a timeline and a
             start date back. No discovery fee, no obligation.
           </p>

@@ -99,11 +99,11 @@ function StudyTile({ study, index }) {
               <span className="text-white/80">{project.sector}</span>
             </span>
 
-            <h3 className="mt-3 max-w-[16ch] text-[clamp(30px,8vw,38px)] leading-[1.02] font-semibold tracking-[-0.055em] text-white md:max-w-[22ch] md:text-[clamp(38px,4.4vw,54px)]">
+            <h3 className="mt-2.5 max-w-[16ch] text-[clamp(24px,6.5vw,30px)] leading-[1.06] font-semibold tracking-[-0.05em] text-white md:mt-3 md:max-w-[22ch] md:text-[clamp(38px,4.4vw,54px)] md:leading-[1.02] md:tracking-[-0.055em]">
               {project.name}
             </h3>
 
-            <p className="mt-3 max-w-[46ch] text-[15px] leading-[1.45] text-white/70 md:mt-4 md:text-[17px]">
+            <p className="mt-3 max-w-[46ch] text-[15px] leading-[1.45] text-white/70 md:mt-4 md:text-[14px] md:text-[17px]">
               {tagline}
             </p>
 

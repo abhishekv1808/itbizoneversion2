@@ -103,7 +103,7 @@ export default function Hero() {
   return (
     <section
       ref={hostRef}
-      className="relative isolate flex min-h-[760px] flex-col items-center justify-center overflow-hidden px-6 pt-30 pb-24 text-center md:min-h-[850px] md:px-8 md:py-35 lg:px-9 lg:py-40"
+      className="relative isolate flex min-h-[620px] flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16 text-center md:min-h-[850px] md:px-8 md:py-35 lg:px-9 lg:py-40"
     >
       <HeroCanvas />
       <CurvedLines />
@@ -133,7 +133,10 @@ export default function Hero() {
 
         <h1
           ref={headlineRef}
-          className="mb-5 max-w-[560px] text-[clamp(44px,13vw,52px)] leading-[1.03] font-semibold tracking-[-0.07em] md:text-[clamp(60px,8vw,72px)] lg:text-[82px]"
+          // 13vw resolved to 51px at 390px, which fit about seven characters
+          // to a line and pushed the sub-copy and both CTAs below the fold.
+          // 9.5vw lands at 37px and keeps the whole offer on one screen.
+          className="mb-5 max-w-[560px] text-[clamp(32px,9.5vw,44px)] leading-[1.06] font-semibold tracking-[-0.055em] md:text-[clamp(60px,8vw,72px)] md:leading-[1.03] md:tracking-[-0.07em] lg:text-[82px]"
         >
           Everything digital, under{' '}
           <span className="font-serif font-semibold italic tracking-[-0.08em]">
@@ -144,7 +147,7 @@ export default function Hero() {
 
         <motion.p
           variants={rise}
-          className="max-w-[476px] text-[17px] leading-[1.45] font-normal text-muted"
+          className="max-w-[476px] text-[14px] leading-[1.55] font-normal text-muted md:text-[17px] md:leading-[1.45]"
         >
           {SITE.description}
         </motion.p>
@@ -156,7 +159,10 @@ export default function Hero() {
           <Magnetic className="w-full md:w-auto">
             <a
               href="#contact"
-              className="inline-flex h-14 w-full items-center justify-center rounded-full bg-ink px-[30px] text-[15px] font-semibold text-white transition-shadow duration-300 hover:shadow-[0_8px_28px_rgba(0,0,0,0.18)] md:w-auto"
+              // h-12 on phones. 56px is a desktop button size; the tap target
+              // guidance it was built around asks for 44px, so 48 clears it
+              // with room and returns 8px to the fold.
+              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14px] font-semibold text-white transition-shadow duration-300 hover:shadow-[0_8px_28px_rgba(0,0,0,0.18)] md:h-14 md:px-[30px] md:text-[15px] md:w-auto"
             >
               Get a quotation
             </a>

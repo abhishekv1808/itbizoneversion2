@@ -3,7 +3,14 @@
 import Script from 'next/script'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
-import { GA_ID, analyticsEnabled, track, EVENTS } from '@/lib/analytics'
+import {
+  ADS_ID,
+  GA_ID,
+  analyticsEnabled,
+  track,
+  trackConversion,
+  EVENTS,
+} from '@/lib/analytics'
 
 /**
  * GA4 loader.
@@ -64,9 +71,11 @@ export default function Analytics() {
         cta: link.dataset.cta || 'inline',
       }
 
-      if (href.startsWith('tel:')) track(EVENTS.call, where)
+      // A tapped phone number is a lead, not a page interaction —
+      // on mobile paid traffic it is often the only one that happens.
+      if (href.startsWith('tel:')) trackConversion(EVENTS.call, where)
       else if (href.startsWith('mailto:')) track(EVENTS.email, where)
-      else if (href.includes('wa.me/')) track(EVENTS.whatsapp, where)
+      else if (href.includes('wa.me/')) trackConversion(EVENTS.whatsapp, where)
     }
 
     document.addEventListener('click', onClick, { capture: true })
@@ -77,8 +86,13 @@ export default function Analytics() {
 
   return (
     <>
+      {/*
+        One gtag library serves both properties — loading it twice would
+        double-count. The `id` on the loader only has to be one configured
+        destination, so it falls back to the Ads account when GA4 is unset.
+      */}
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID || ADS_ID}`}
         strategy="afterInteractive"
       />
       <Script id="ga4-init" strategy="afterInteractive">
@@ -87,7 +101,15 @@ export default function Analytics() {
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${GA_ID}', { send_page_view: true });
+          ${GA_ID ? `gtag('config', '${GA_ID}', { send_page_view: true });` : ''}
+          ${
+            ADS_ID
+              ? // Ads is configured separately from GA4, and deliberately
+                // without page views: this account is here to receive
+                // conversions, not to duplicate GA4's traffic reporting.
+                `gtag('config', '${ADS_ID}', { send_page_view: false });`
+              : ''
+          }
         `}
       </Script>
     </>

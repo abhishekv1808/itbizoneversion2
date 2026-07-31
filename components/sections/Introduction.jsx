@@ -60,7 +60,7 @@ export default function Introduction() {
       <div className="mt-16 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-soft pt-12 md:mt-20 md:grid-cols-4">
         {STATS.map((stat, i) => (
           <Reveal key={stat.label} delay={i * 0.08}>
-            <div className="text-[clamp(38px,9vw,44px)] leading-none font-semibold tracking-[-0.06em] md:text-[52px]">
+            <div className="text-[clamp(28px,7.5vw,36px)] md:text-[clamp(38px,9vw,44px)] leading-none font-semibold tracking-[-0.06em] md:text-[52px]">
               <Counter to={stat.to} suffix={stat.suffix} />
             </div>
             <div className="mt-3 text-sm font-medium text-muted">

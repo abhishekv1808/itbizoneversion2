@@ -21,7 +21,13 @@ export function Accent({ children }) {
 export function SectionTitle({ children, className = '' }) {
   return (
     <h2
-      className={`text-[clamp(30px,8vw,36px)] leading-[1.06] font-semibold tracking-[-0.055em] md:text-[clamp(38px,5vw,48px)] lg:text-[54px] ${className}`}
+      /*
+        The mobile step was 8vw, which resolves to 31px at 390px wide and left
+        headings running to three and four lines. 7vw with a 30px ceiling puts
+        it at 27px there, and the ceiling stops it growing past what a phone
+        in landscape needs. Desktop is untouched.
+      */
+      className={`text-[clamp(25px,7vw,30px)] leading-[1.08] font-semibold tracking-[-0.05em] md:text-[clamp(38px,5vw,48px)] md:leading-[1.06] md:tracking-[-0.055em] lg:text-[54px] ${className}`}
     >
       {children}
     </h2>
@@ -31,7 +37,17 @@ export function SectionTitle({ children, className = '' }) {
 export function Lede({ children, className = '' }) {
   return (
     <p
-      className={`text-[17px] leading-[1.55] font-normal text-muted ${className}`}
+      /*
+        14px on phones, 17px from md up. 17px is a comfortable reading size in
+        a 500px column; in a 345px one it sets about six words to the line and
+        turns every three-sentence lede into a five-line block, which is what
+        pushed the sections so far apart.
+
+        Line height goes up as the size comes down — 1.55 rather than 1.5.
+        Smaller type needs proportionally more leading to stay readable, and
+        without it the block reads as denser rather than smaller.
+      */
+      className={`text-[14px] leading-[1.55] font-normal text-muted md:text-[17px] md:leading-[1.55] ${className}`}
     >
       {children}
     </p>

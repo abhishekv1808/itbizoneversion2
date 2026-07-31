@@ -53,11 +53,11 @@ export default function QuotePage() {
             <span className="text-muted">Build an estimate</span>
           </nav>
 
-          <h1 className="mt-8 max-w-[820px] text-[clamp(40px,11vw,50px)] leading-[1.04] font-semibold tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
+          <h1 className="mt-8 max-w-[820px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.04] md:tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
             See the number <Accent>before</Accent> you call.
           </h1>
 
-          <p className="mt-7 max-w-[540px] text-[17px] leading-[1.45] text-muted">
+          <p className="mt-7 max-w-[540px] text-[14px] md:text-[17px] leading-[1.45] text-muted">
             These are our published catalogue prices — the same ones we quote
             from. Pick what you need for an indicative range, then have the
             itemised written quotation sent over.

@@ -16,7 +16,18 @@ import { priceSelection, formatINR } from '@/lib/pricing'
 
 const MAX = { name: 100, email: 200, phone: 40, company: 120, message: 4000 }
 
-function validate(body, { quote } = {}) {
+/*
+  A callback request is a deliberately shorter form: a name, a way to reach
+  them, and nothing else. It exists because ad traffic arrives with intent but
+  no patience — asking someone who clicked an ad for a ten-character project
+  description loses more leads than the description is worth.
+
+  It is a distinct intent rather than a synthetic message, so the enquiry that
+  lands in the inbox says plainly that this person asked to be called and did
+  not describe the job. Filling the gap with placeholder prose would quietly
+  make a thin lead look like a briefed one.
+*/
+function validate(body, { quote, callback } = {}) {
   const errors = {}
   const clean = (value) => (typeof value === 'string' ? value.trim() : '')
 
@@ -36,12 +47,17 @@ function validate(body, { quote } = {}) {
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > MAX.email)
     errors.email = 'That email address does not look right.'
 
-  if (phone && phone.length > MAX.phone) errors.phone = 'That number is too long.'
+  if (callback && !phone) {
+    // The one field a callback cannot do without.
+    errors.phone = 'We need a number to call you on.'
+  } else if (phone && phone.length > MAX.phone) {
+    errors.phone = 'That number is too long.'
+  }
   if (company.length > MAX.company) errors.company = 'That name is too long.'
 
   // A priced selection is itself the brief, so the estimator does not ask for
   // a message. Only require one when there is no quote attached.
-  if (quote) {
+  if (quote || callback) {
     if (message.length > MAX.message)
       errors.message = 'That is longer than we can accept — send the detail by email.'
   } else if (!message) {
@@ -97,7 +113,8 @@ export async function POST(request) {
     )
   }
 
-  const { errors, data } = validate(body, { quote })
+  const callback = body.intent === 'callback'
+  const { errors, data } = validate(body, { quote, callback })
   if (Object.keys(errors).length) {
     return Response.json({ errors }, { status: 422 })
   }
@@ -123,6 +140,8 @@ export async function POST(request) {
     ['Phone', data.phone || '—'],
     ['Company', data.company || '—'],
     ['Service', data.service || '—'],
+    // Says so explicitly, so a short lead is never mistaken for a briefed one.
+    ['Type', callback ? 'Callback requested — no brief given' : 'Enquiry'],
   ]
     .map(
       ([label, value]) =>

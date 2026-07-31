@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2, RotateCcw } from "lucide-react";
 import { QUOTABLE_SERVICES, estimateRange, formatINR } from "@/lib/pricing";
-import { track, EVENTS } from "@/lib/analytics";
+import { track, trackConversion, EVENTS } from "@/lib/analytics";
 import { SITE } from "@/lib/site";
 
 const EMPTY_CONTACT = {
@@ -117,7 +117,7 @@ export default function QuoteBuilder() {
         return;
       }
 
-      track(EVENTS.quoteRequest, {
+      trackConversion(EVENTS.quoteRequest, {
         service: service.name,
         item_count: selected.length,
         value: low,
@@ -347,7 +347,7 @@ export default function QuoteBuilder() {
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="mt-1 inline-flex h-13 items-center justify-center gap-2 rounded-full bg-ink px-7 text-[15px] font-semibold text-white transition-opacity disabled:opacity-60"
+                  className="mt-1 inline-flex h-12 md:h-13 items-center justify-center gap-2 rounded-full bg-ink px-7 text-[15px] font-semibold text-white transition-opacity disabled:opacity-60"
                 >
                   {status === "sending" && (
                     <Loader2 size={16} className="animate-spin" />

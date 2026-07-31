@@ -1,10 +1,11 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Loader2 } from 'lucide-react'
 import { SITE } from '@/lib/site'
-import { track, EVENTS } from '@/lib/analytics'
+import { track, trackConversion, EVENTS } from '@/lib/analytics'
 
 const SERVICES = [
   'Website Development',
@@ -30,6 +31,7 @@ const field =
   'w-full rounded-xl border border-soft bg-bg px-4 py-3.5 text-[15px] outline-none transition-colors duration-200 placeholder:text-quiet focus:border-ink/30'
 
 export default function ContactForm() {
+  const router = useRouter()
   const [values, setValues] = useState(EMPTY)
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
@@ -78,13 +80,18 @@ export default function ContactForm() {
 
       // Fired only after the server confirms delivery, so the conversion
       // count reflects enquiries that actually reached the inbox.
-      track(EVENTS.lead, {
+      trackConversion(EVENTS.lead, {
         service: values.service || 'unspecified',
         has_phone: Boolean(values.phone),
       })
 
       setValues(EMPTY)
       setStatus('sent')
+
+      // Client-side push, so the document is never unloaded and the
+      // conversion above is safely away before the route changes. The page
+      // view on arrival is what Ads counts as a URL-based conversion.
+      router.push('/thank-you')
     } catch {
       track(EVENTS.leadFailed, { status: 'network' })
       setFailure('Could not reach the server. Please check your connection.')
@@ -262,7 +269,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status === 'sending'}
-          className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-ink px-8 text-[15px] font-semibold text-white transition-transform duration-200 hover:-translate-y-px disabled:opacity-60"
+          className="inline-flex h-12 md:h-14 items-center justify-center gap-2 rounded-full bg-ink px-8 text-[15px] font-semibold text-white transition-transform duration-200 hover:-translate-y-px disabled:opacity-60"
         >
           {status === 'sending' && (
             <Loader2 size={16} className="animate-spin motion-reduce:animate-none" />

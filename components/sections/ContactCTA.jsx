@@ -16,7 +16,7 @@ export default function ContactCTA() {
   return (
     <section
       id="contact"
-      className="scroll-mt-24 px-6 py-28 md:px-9 md:py-36 lg:py-44"
+      className="scroll-mt-24 px-6 py-16 md:px-9 md:py-36 lg:py-44"
     >
       <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center text-center">
         <Reveal>
@@ -24,13 +24,13 @@ export default function ContactCTA() {
         </Reveal>
 
         <Reveal delay={0.06}>
-          <h2 className="mt-7 max-w-[620px] text-[clamp(40px,12vw,48px)] leading-[1.03] font-semibold tracking-[-0.065em] md:text-[clamp(56px,7vw,68px)] lg:text-[76px]">
+          <h2 className="mt-6 max-w-[620px] text-[clamp(30px,9vw,38px)] leading-[1.06] font-semibold tracking-[-0.05em] md:mt-7 md:text-[clamp(56px,7vw,68px)] md:leading-[1.03] md:tracking-[-0.065em] lg:text-[76px]">
             Tell us what you&rsquo;re <Accent>building</Accent>.
           </h2>
         </Reveal>
 
         <Reveal delay={0.12}>
-          <p className="mt-6 max-w-[460px] text-[17px] leading-[1.45] text-muted">
+          <p className="mt-5 max-w-[460px] text-[14px] leading-[1.55] text-muted md:mt-6 md:text-[17px] md:leading-[1.45]">
             Send us the brief and we&rsquo;ll come back with a written
             quotation, a timeline, and a start date. Quotations hold for 30
             days.
@@ -47,7 +47,7 @@ export default function ContactCTA() {
             initial="rest"
             whileHover="hover"
             whileTap="tap"
-            className="inline-flex h-14 w-full items-center justify-center rounded-full bg-ink px-[30px] text-[15px] font-semibold text-white md:w-auto"
+            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14px] font-semibold text-white md:h-14 md:px-[30px] md:text-[15px] md:w-auto"
           >
             Request a quotation
           </motion.a>

@@ -24,19 +24,19 @@ export default function ServiceHero({ service }) {
           <span className="text-muted">{service.name}</span>
         </nav>
 
-        <h1 className="mt-8 max-w-[880px] text-[clamp(40px,11vw,50px)] leading-[1.04] font-semibold tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
+        <h1 className="mt-8 max-w-[880px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.04] md:tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
           {before} <Accent>{accent}</Accent>
           {after}
         </h1>
 
-        <p className="mt-7 max-w-[560px] text-[17px] leading-[1.45] text-muted">
+        <p className="mt-7 max-w-[560px] text-[14px] md:text-[17px] leading-[1.45] text-muted">
           {service.lede}
         </p>
 
         <div className="mt-9 flex w-full max-w-[320px] flex-col items-center gap-4 md:max-w-none md:flex-row">
           <a
             href="#quote"
-            className="inline-flex h-14 w-full items-center justify-center rounded-full bg-ink px-[30px] text-[15px] font-semibold text-white transition-transform duration-200 hover:-translate-y-px md:w-auto"
+            className="inline-flex h-12 md:h-14 w-full items-center justify-center rounded-full bg-ink px-[30px] text-[15px] font-semibold text-white transition-transform duration-200 hover:-translate-y-px md:w-auto"
           >
             Get a quotation
           </a>
