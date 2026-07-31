@@ -45,7 +45,7 @@ export default async function CaseStudyPage({ params }) {
   const study = getCaseStudy(slug)
   if (!study) notFound()
 
-  const { project, tagline, challenge, delivered, metrics } = study
+  const { project, tagline, challenge, delivered, metrics, gallery } = study
   const next = nextCaseStudy(slug)
   const hasMetrics = metrics?.some((m) => m.value != null)
 
@@ -216,6 +216,49 @@ export default async function CaseStudyPage({ params }) {
           </Reveal>
         </div>
       </Section>
+
+      {/*
+        ── Screens ──────────────────────────────────────────────────────
+        Only rendered for studies that carry captures. Each figure keeps its
+        own intrinsic ratio rather than sitting in a fixed aspect box: these
+        run from 1.75 to 2.84, and a shared box would crop the widest of them
+        to a sliver.
+      */}
+      {gallery?.length ? (
+        <Section className="bg-panel">
+          <Reveal className="max-w-[560px]">
+            <Eyebrow>Screens</Eyebrow>
+            <SectionTitle className="mt-7">
+              The site, in <Accent>use</Accent>.
+            </SectionTitle>
+          </Reveal>
+
+          <div className="mt-14 flex flex-col gap-12 md:mt-16 md:gap-16">
+            {gallery.map((shot, i) => (
+              <Reveal key={shot.src} y={24} delay={i === 0 ? 0 : 0.05}>
+                <figure>
+                  <div className="overflow-hidden rounded-2xl border border-soft bg-bg">
+                    <Image
+                      src={shot.src}
+                      alt={shot.caption}
+                      width={shot.width}
+                      height={shot.height}
+                      sizes="(max-width: 1200px) 100vw, 1200px"
+                      className="h-auto w-full"
+                    />
+                  </div>
+                  <figcaption className="mt-4 max-w-[620px] text-[15px] leading-[1.5] text-muted">
+                    <span className="mr-2 text-[13px] font-medium text-quiet tabular-nums">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    {shot.caption}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      ) : null}
 
       {/* ── Next study ────────────────────────────────────────────────── */}
       {next && next.slug !== slug ? (

@@ -76,6 +76,20 @@
   }
 }
 
+/* End-of-rail cue on the portfolio panel. Small travel and a long pause at
+   rest — a continuous bounce next to static type reads as a broken loader.
+   Called through motion-safe:, so it stops for prefers-reduced-motion. */
+@keyframes nudge-down {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(3px);
+  }
+}
+
 /* Bottom-of-hero progressive blur: the blur is masked so it ramps in
    rather than switching on, and the gradient carries it to solid white. */
 @utility progressive-blur {

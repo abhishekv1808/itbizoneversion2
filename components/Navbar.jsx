@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLenis } from 'lenis/react'
 import { ChevronUp } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 import SectionLink from '@/components/ui/SectionLink'
 import { SITE } from '@/lib/site'
 
@@ -97,13 +98,15 @@ export default function Navbar() {
     <>
       <header className="fixed inset-x-0 top-0 z-100">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-[19px] md:px-8 lg:px-9">
-          <a
-            href="/"
-            className={`text-[26px] leading-none font-semibold tracking-[-0.06em] transition-colors duration-300 md:text-[30px] ${
-              onDark && !open ? 'text-white' : 'text-ink'
-            }`}
-          >
-            ITBIZ<span className="font-serif italic">one</span>
+          {/* The colour swap that used to be text-white/text-ink is now the
+              reversed artwork — same trigger, same two states. */}
+          <a href="/" aria-label="ITBIZONE — home" className="inline-flex">
+            <Logo
+              priority
+              alt=""
+              reversed={onDark && !open}
+              className="h-[22px] w-auto md:h-[26px]"
+            />
           </a>
 
           <motion.button

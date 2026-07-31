@@ -120,13 +120,20 @@ function PosterGrid({ onSelect }) {
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
       {POSTERS.map((poster) => (
+        // rounded-sm is kept in step with the roundedBox radius in
+        // GalleryGrid, so the WebGL wall and this fallback read as the
+        // same component.
         <button
           key={poster.id}
           type="button"
           onClick={() => onSelect(poster)}
-          className="group overflow-hidden rounded-2xl border border-soft bg-bg text-left"
+          className="group overflow-hidden rounded-sm border border-soft bg-bg text-left"
         >
-          <PosterImage poster={poster} className="aspect-[2/3] w-full" />
+          {/* No fixed aspect: a 2:3 box with overflow-hidden cropped every
+              piece that was not already portrait, which is the same thing the
+              WebGL wall used to do. Rows end up ragged instead, which is the
+              honest trade. */}
+          <PosterImage poster={poster} className="w-full" />
           <span className="block px-3 py-3 text-[13px] font-medium">
             {poster.title}
             <span className="mt-0.5 block text-xs font-normal text-quiet">

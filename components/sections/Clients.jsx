@@ -21,15 +21,20 @@ gsap.registerPlugin(ScrollTrigger)
  * neighbours so the wall reads as many brands rather than one list.
  * ──────────────────────────────────────────────────────────────────────────
  */
+// Kept in step with lib/projects.js — this wall and the portfolio rail name
+// the same clients on the same page, so a name dropped from one has to go
+// from the other or the page contradicts itself.
 const CLIENTS = [
-  { name: 'Lexakind', className: 'font-serif font-semibold italic' },
   { name: 'Right Assets', className: 'font-sans font-bold' },
   { name: 'OpenCredit', className: 'font-sans font-semibold' },
   { name: 'Obapstech', className: 'font-[system-ui] font-extrabold' },
   { name: 'Pixcert', className: 'font-sans font-semibold tracking-[-0.06em]' },
   { name: 'Newkumar', className: 'font-[Georgia,serif] font-bold' },
   { name: 'Bhoomika Seva', className: 'font-serif font-semibold' },
-  { name: 'Simtech', className: 'font-[system-ui] font-bold' },
+  { name: 'Krushiyuga', className: 'font-sans font-bold' },
+  // A separate client from Krushiyuga above: the farming business and the
+  // environmental non-profit are different brands on different sites.
+  { name: 'Namma Krushiyuga', className: 'font-serif font-semibold' },
 ]
 
 // 6 × 8 on desktop. Keep it a multiple of 6 so the grid never leaves a ragged

@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import BackToTop from '@/components/ui/BackToTop'
+import Logo from '@/components/ui/Logo'
 import OfficeStatus from '@/components/ui/OfficeStatus'
 import SectionLink from '@/components/ui/SectionLink'
 import { SITE, SOCIALS } from '@/lib/site'
@@ -47,11 +48,10 @@ export default function Footer() {
       <div className="mx-auto w-full max-w-[1200px] px-6 pt-20 md:px-9 md:pt-28">
         <div className="grid gap-14 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-5">
-            <a
-              href="/"
-              className="text-[40px] leading-none font-semibold tracking-[-0.06em] md:text-[52px]"
-            >
-              ITBIZ<span className="font-serif italic">one</span>
+            {/* The footer is bg-ink throughout, so every mark below is
+                reversed. */}
+            <a href="/" aria-label="ITBIZONE — home" className="inline-flex">
+              <Logo reversed alt="" className="h-[34px] w-auto md:h-[44px]" />
             </a>
 
             <p className="mt-6 max-w-[320px] text-[15px] leading-[1.5] text-white/55">
@@ -155,9 +155,13 @@ export default function Footer() {
         aria-hidden="true"
         className="pointer-events-none mt-12 select-none overflow-hidden px-6 md:mt-16 md:px-9"
       >
-        <span className="block text-center text-[clamp(64px,14.5vw,230px)] leading-[0.8] font-semibold tracking-[-0.07em] text-white/10">
-          ITBIZ<span className="font-serif italic">one</span>
-        </span>
+        {/* Wider than its box on purpose so the padded edges still crop it,
+            which is what the type-set version did with negative tracking. */}
+        <Logo
+          reversed
+          alt=""
+          className="w-[104%] max-w-none h-auto opacity-10"
+        />
       </div>
 
       <div className="mx-auto w-full max-w-[1200px] px-6 pt-10 pb-10 md:px-9">

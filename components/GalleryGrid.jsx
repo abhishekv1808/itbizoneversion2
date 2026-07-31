@@ -9,27 +9,24 @@ import { POSTERS, drawPoster } from '@/lib/posters'
 gsap.registerPlugin(ScrollTrigger)
 
 /**
- * Crops a texture to a target aspect instead of stretching it.
+ * How much to scale a plane so its artwork sits inside the cell at its own
+ * proportions, uncropped.
  *
- * The wall's planes are a fixed 2:3, but the artwork is a mix of 9:16 stories,
- * 1:1 posts, a 2819x4000 brochure and a visiting card. Without this every
- * square post would be squeezed into portrait. Same idea as CSS object-fit:
- * cover, expressed as a UV window.
+ * The cells are a fixed 3:4, but the artwork is a mix of 9:16 stories, 4:5 and
+ * 1:1 posts, a 2819x4000 brochure and a visiting card. These used to be
+ * cover-cropped, which cut the edges off everything that did not match the
+ * cell — a square post lost its top and bottom, and the visiting card lost
+ * most of its width. Fitting instead means every card draws at the design's
+ * real dimensions.
+ *
+ * The grid pitch is unaffected: a fitted plane is always smaller than its
+ * cell, never larger, so nothing can collide with its neighbour.
  */
-function cover(texture, planeAspect) {
-  const image = texture.image
-  if (!image?.width || !image?.height) return
-  const imageAspect = image.width / image.height
-
-  if (imageAspect > planeAspect) {
-    // Wider than the plane — trim the sides.
-    texture.repeat.set(planeAspect / imageAspect, 1)
-    texture.offset.set((1 - texture.repeat.x) / 2, 0)
-  } else {
-    // Taller than the plane — trim top and bottom.
-    texture.repeat.set(1, imageAspect / planeAspect)
-    texture.offset.set(0, (1 - texture.repeat.y) / 2)
-  }
+function fitToCell(imageAspect) {
+  const cellAspect = PLANE_W / PLANE_H
+  return imageAspect > cellAspect
+    ? { x: 1, y: cellAspect / imageAspect } // wider than the cell — pin width
+    : { x: imageAspect / cellAspect, y: 1 } // taller — pin height
 }
 
 
@@ -44,14 +41,40 @@ function cover(texture, planeAspect) {
  * container width the two levers, and it is why this section is full-bleed:
  * the 1200px measure was capping the cards.
  *
- * Visible count scales with COLS², so 8 columns holds 22–24 on screen while
- * still drawing each poster ~22% larger than a 7-column field did.
+ * 8 columns packed 22–24 posters on screen at roughly 150px wide, which is too
+ * small to read a design at. 6 columns trades about a third of that count for
+ * cards ~40% wider, and a tighter gap recovers a little more. Taking the
+ * section height up on its own would not have done this — it would only have
+ * shown more rows at the same size.
  */
-const COLS = 8
+const COLS = 6
 const ROWS = 4
 const PLANE_H = 1.8
-const PLANE_W = PLANE_H * (2 / 3) // posters are 2:3
-const GAP = 0.3
+
+/*
+  The cell is 3:4, not the 2:3 the posters used to be forced into.
+
+  Real ratios across the 22 pieces run 0.563 to 1.0: seven 9:16 stories, eight
+  4:5 posts, five 1:1 posts, a 0.705 brochure and a 0.875 visiting card. One
+  fixed cell has to cover that whole range, and whatever it cannot fill shows
+  up as empty space around the artwork.
+
+  At 0.667 the waste was lopsided: stories left 16% across, but every square
+  post left 33% down — which is what read as big vertical holes in the wall.
+  0.75 is the geometric mean of the two extremes, so the worst case in either
+  axis drops to 25% and no single group is left floating in its cell. The
+  extremes have not moved as pieces were added, so this still holds — and the
+  eight 4:5 posts sit at 0.80, near enough to the cell to waste almost nothing.
+*/
+const PLANE_W = PLANE_H * (3 / 4)
+
+/*
+  Only the gutter between cells. It is not the whole space between two cards:
+  a fitted card can sit up to 25% narrower than its cell, so what the eye
+  reads as the gap is this plus whatever each neighbour leaves unfilled.
+  Taking it below ~0.05 buys nothing, because that residue dominates.
+*/
+const GAP = 0.06
 
 const CELL_W = PLANE_W + GAP
 const CELL_H = PLANE_H + GAP
@@ -85,7 +108,7 @@ const vertexShader = /* glsl */ `
       To scope it rectangularly this projects the vertex once *unbent* to find
       where it lands on screen, derives how close that is to the nearest
       viewport edge, and only then applies the bend. Two projections per vertex
-      is cheap: there are COLS x ROWS = 32 planes of 12x12 segments, not a
+      is cheap: there are COLS x ROWS = 24 planes of 12x12 segments, not a
       character model.
     */
     vec4 flatClip = projectionMatrix * viewMatrix * world;
@@ -120,10 +143,16 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
-    // 0.11 in this space is ~16% of the card's width. At 0.05 the corners
-    // were geometrically rounded but read as square at the size a card
-    // actually draws on screen.
-    float d = roundedBox(p, vec2(uAspect, 1.0) * 0.5, 0.11);
+    /*
+      p spans uAspect across and 1.0 down, so this is a fraction of the card's
+      height. At the ~300px a card now draws, 0.013 lands around 4px — the
+      same corner as Tailwind's rounded-sm, which is what the flat fallback
+      grid in DesignGallery uses.
+
+      uAspect is per-mesh and follows the artwork's real ratio, so the corner
+      stays circular on a wide visiting card instead of going elliptical.
+    */
+    float d = roundedBox(p, vec2(uAspect, 1.0) * 0.5, 0.013);
 
     float mask = 1.0 - smoothstep(-0.005, 0.005, d);
     if (mask <= 0.001) discard;
@@ -198,33 +227,18 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
         /*
           The drawn composition goes up first and the real artwork replaces it
           when it arrives. Loading synchronously is not an option — these are
-          13 files, several over 400KB — and starting from a blank plane would
+          22 files, several over 400KB — and starting from a blank plane would
           flash an empty wall on every load.
         */
-        const texture = new THREE.CanvasTexture(drawPoster(spec))
+        // Drawn at the cell's ratio, not drawPoster's 2:3 default — the
+        // placeholder covers the whole plane, so a mismatch would stretch it
+        // for as long as the real file takes to arrive.
+        const texture = new THREE.CanvasTexture(
+          drawPoster(spec, 1, PLANE_W / PLANE_H)
+        )
         texture.colorSpace = THREE.SRGBColorSpace
         texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
         textures.push(texture)
-
-        if (spec.src) {
-          loader.load(
-            spec.src,
-            (loaded) => {
-              if (disposed) {
-                loaded.dispose()
-                return
-              }
-              loaded.colorSpace = THREE.SRGBColorSpace
-              loaded.anisotropy = renderer.capabilities.getMaxAnisotropy()
-              cover(loaded, PLANE_W / PLANE_H)
-              textures.push(loaded)
-              material.uniforms.uMap.value = loaded
-            },
-            undefined,
-            // Leave the drawn composition in place on failure.
-            () => {}
-          )
-        }
 
         const material = new THREE.ShaderMaterial({
           vertexShader,
@@ -233,13 +247,18 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
           uniforms: {
             uMap: { value: texture },
             uHover: { value: 0 },
+            // Overwritten with the artwork's real ratio once it loads.
             uAspect: { value: PLANE_W / PLANE_H },
-            // Retuned for the 8×4 field. Curvature is applied to squared
-            // radius, so widening the span without flattening the dome would
-            // drive the corner posters far behind the camera plane.
-            uCurve: { value: 0.032 },
-            uFadeStart: { value: 4.0 },
-            uFadeEnd: { value: 7.2 },
+            /*
+              Curvature is applied to squared radius, so these three are all
+              in world units and all had to come down with the field: six
+              columns at a tighter gap put the far corner at ~5.0 rather than
+              ~6.6, which would otherwise have flattened the bend and pushed
+              the seam fade off the end of the visible area.
+            */
+            uCurve: { value: 0.05 },
+            uFadeStart: { value: 3.0 },
+            uFadeEnd: { value: 5.4 },
             /*
               Where the bend starts, as a fraction of the way from the centre
               of the viewport to its edge. 0.6 leaves the middle 60% of the
@@ -257,10 +276,45 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
           // Offsetting alternate columns breaks the rigid grid without
           // disturbing the wrap, since the shift stays inside one span.
           baseY: (row - (ROWS - 1) / 2) * CELL_H + (col % 2) * CELL_H * 0.5,
+          // Replaced on load; the hover pop multiplies this rather than
+          // overwriting the scale, or a fitted card would snap back to 2:3
+          // the moment the cursor touched it.
+          fit: { x: 1, y: 1 },
         }
 
         scene.add(mesh)
         meshes.push(mesh)
+
+        if (spec.src) {
+          loader.load(
+            spec.src,
+            (loaded) => {
+              if (disposed) {
+                loaded.dispose()
+                return
+              }
+              loaded.colorSpace = THREE.SRGBColorSpace
+              loaded.anisotropy = renderer.capabilities.getMaxAnisotropy()
+              textures.push(loaded)
+              material.uniforms.uMap.value = loaded
+
+              // Reshape the plane to the artwork now that its real dimensions
+              // are known. The placeholder is already 2:3, so a card only
+              // changes size here if the design is not.
+              const { width, height } = loaded.image
+              if (width && height) {
+                const fit = fitToCell(width / height)
+                mesh.userData.fit = fit
+                mesh.scale.set(fit.x, fit.y, 1)
+                material.uniforms.uAspect.value =
+                  (PLANE_W * fit.x) / (PLANE_H * fit.y)
+              }
+            },
+            undefined,
+            // Leave the drawn composition in place on failure.
+            () => {}
+          )
+        }
       }
     }
 
@@ -428,7 +482,12 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
       meshes.forEach((mesh, i) => {
         const uniform = mesh.material.uniforms.uHover
         uniform.value += ((i === activeIndex ? 1 : 0) - uniform.value) * 0.12
-        mesh.scale.setScalar(1 + uniform.value * 0.07)
+
+        // setScalar would discard the per-artwork fit and snap the card back
+        // to the 2:3 cell, so the pop is applied on top of it.
+        const pop = 1 + uniform.value * 0.07
+        const { fit } = mesh.userData
+        mesh.scale.set(fit.x * pop, fit.y * pop, 1)
       })
 
       renderer.render(scene, camera)
@@ -465,7 +524,7 @@ export default function GalleryGrid({ onSelect, onActiveChange }) {
       //
       // pan-y keeps vertical swipes scrolling the page; horizontal drags
       // belong to the field.
-      className="relative left-1/2 h-[500px] w-screen -translate-x-1/2 cursor-grab touch-pan-y overflow-hidden select-none md:h-[760px] lg:h-[880px]"
+      className="relative left-1/2 h-[640px] w-screen -translate-x-1/2 cursor-grab touch-pan-y overflow-hidden select-none md:h-[920px] lg:h-[1080px]"
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>

@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import Link from 'next/link'
 import { ArrowLeft, Home, MessageCircle } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 
 /* ─── Colour palette (matches the site tokens) ────────────────────── */
 const PALETTE = {
@@ -497,7 +498,10 @@ export default function NotFoundScene() {
         className="absolute bottom-6 left-0 right-0 z-[2] text-center text-[12px] text-white/20"
         style={{ animation: 'nf-fadeSlideUp 0.8s ease-out 2.6s both' }}
       >
-        Error 404 · ITBIZ<span className="font-serif italic">one</span>
+        <span className="inline-flex items-center gap-1.5">
+          Error 404 ·
+          <Logo reversed alt="ITBIZONE" className="h-[11px] w-auto" />
+        </span>
       </div>
 
       {/* Keyframe animations — scoped with nf- prefix to avoid collision */}
