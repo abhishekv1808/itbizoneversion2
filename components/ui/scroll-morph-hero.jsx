@@ -22,25 +22,61 @@ import useReducedMotion from '@/lib/useReducedMotion'
  * ──────────────────────────────────────────────────────────────────────────
  */
 
-// 9:16 — Instagram story / WhatsApp status. The artwork is drawn at the same
-// ratio in DesignShowcase, so nothing is cropped.
-const CARD_W = 108
-const CARD_H = 192
+/*
+  Card width, and the only dimension that is fixed — height follows each
+  artwork, see cardHeight below. Width is what the ring and the arc space by,
+  so holding it uniform is what keeps the gaps even.
+
+  Up from 108. The ring solver caps its scale at 1, so this is the ceiling on
+  how large a card can ever draw; raising the cap alone did nothing. On a
+  1440×900 stage a ring card is now ~123px wide against 100px before, and an
+  arc card ~198px against 162px.
+*/
+const CARD_W = 132
+
+/*
+  The tallest ratio in the set (9:16 stories). CARD_H is derived from it rather
+  than typed, because it is not a card size any more — it is the worst-case
+  radial extent the ring has to leave room for. Cards shorter than this simply
+  take up less of it.
+*/
+const TALLEST_RATIO = 9 / 16
+const CARD_H = Math.round(CARD_W / TALLEST_RATIO)
 
 /**
- * Clear space between neighbouring cards in the arc, in px.
+ * Clear space between neighbouring cards, in px, in both the ring and the arc.
  *
- * This is the knob for how many cards are on stage at once: the count is
- * roughly stageWidth / (CARD_W × arcScale + CARD_GAP). At 108 × 1.3 that is
- * ~10–11 across 1440px. More cards on stage needs a smaller card, not a
- * smaller gap — dropping the gap to 0 only buys one more.
+ * This is the knob for how many cards are on stage at once: the arc count is
+ * roughly stageWidth / (CARD_W × arcScale + CARD_GAP). At 8 the cards in the
+ * ring read as one continuous band with no air between them; 22 separates
+ * them into distinct pieces.
+ *
+ * It trades against count, not against size — the ring's circumference is
+ * fixed by the stage, so every px of gap is a px not spent on card. The card
+ * count in DesignShowcase came down to pay for this.
  */
-const CARD_GAP = 8
+const CARD_GAP = 22
 
 const lerp = (a, b, t) => a * (1 - t) + b * t
 
+/*
+  Width is fixed, height comes from the artwork.
+
+  Every card used to be a hard CARD_W × CARD_H with object-cover, which was
+  fine while all the artwork was 9:16 but stopped being fine once the set
+  picked up 4:5 posts and 1:1 squares — those had their top and bottom sliced
+  off, so the piece on the card was never the piece that was designed.
+
+  Pinning width and deriving height shows all of them in full while leaving the
+  layout maths untouched: the ring spaces cards along the circumference by
+  their width, which is still uniform, and its radial bound is set by CARD_H —
+  the tallest case, 9:16 — which no card can now exceed.
+*/
+const cardHeight = (ratio) => Math.round(CARD_W / (ratio || TALLEST_RATIO))
+
 function FlipCard({ item, motionValues, index }) {
   const { x, y, rotation, scale, opacity } = motionValues
+  const height = cardHeight(item.ratio)
 
   return (
     <motion.div
@@ -49,7 +85,7 @@ function FlipCard({ item, motionValues, index }) {
       style={{
         position: 'absolute',
         width: CARD_W,
-        height: CARD_H,
+        height,
         transformStyle: 'preserve-3d',
         perspective: 1000,
       }}
@@ -63,14 +99,18 @@ function FlipCard({ item, motionValues, index }) {
       >
         {/* Front — the artwork */}
         <div
-          className="absolute inset-0 overflow-hidden rounded-xl border border-soft bg-panel shadow-[0_4px_16px_rgba(0,0,0,0.10)]"
+          className="absolute inset-0 overflow-hidden rounded-sm border border-soft bg-panel shadow-[0_4px_16px_rgba(0,0,0,0.10)]"
           style={{ backfaceVisibility: 'hidden' }}
         >
           {item.src ? (
             <img
               src={item.src}
               alt={`${item.title} — ${item.category}`}
-              className="h-full w-full object-cover"
+              // contain, not cover. The frame is already the artwork's own
+              // ratio, so there is nothing to crop — but rounding the derived
+              // height to whole pixels can leave a sub-pixel mismatch, and
+              // cover would resolve that by trimming an edge.
+              className="h-full w-full object-contain"
               draggable={false}
             />
           ) : (
@@ -82,7 +122,7 @@ function FlipCard({ item, motionValues, index }) {
 
         {/* Back — the caption, so the flip reveals something worth reading */}
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl bg-ink px-3 text-center"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-1 overflow-hidden rounded-sm bg-ink px-3 text-center"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
           <span className="text-[9px] font-semibold tracking-[0.18em] text-white/45 uppercase">
@@ -244,9 +284,14 @@ export default function ScrollMorphHero({
                   : {}
               }
               transition={{ duration: 0.9 }}
-              // Narrow enough to sit inside the ring's clear hole
-              // (R − CARD_H × ringScale / 2), which is ~500px on desktop.
-              className="max-w-[380px] text-[clamp(24px,5.5vw,30px)] leading-[1.1] font-semibold tracking-[-0.05em] md:max-w-[420px] md:text-[clamp(30px,3.4vw,38px)]"
+              /*
+                Narrow enough to sit inside the ring's clear hole, whose radius
+                works out to ringBound − CARD_H × ringScale. Bigger cards eat
+                directly into that: the hole went from ~510px across to ~430px
+                when the cards grew, so this came down with it. The box is
+                square and the hole is round, so leave margin for the corners.
+              */
+              className="max-w-[320px] text-[clamp(22px,5vw,28px)] leading-[1.1] font-semibold tracking-[-0.05em] md:max-w-[360px] md:text-[clamp(28px,3vw,34px)]"
             >
               {introTitle}
             </motion.h2>

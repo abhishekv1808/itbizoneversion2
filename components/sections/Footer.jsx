@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import BackToTop from '@/components/ui/BackToTop'
+import FooterWordmark from '@/components/ui/FooterWordmark'
 import Logo from '@/components/ui/Logo'
 import OfficeStatus from '@/components/ui/OfficeStatus'
 import SectionLink from '@/components/ui/SectionLink'
@@ -150,19 +151,9 @@ export default function Footer() {
       </div>
 
       {/* The signature: full-bleed wordmark, set tight enough that the footer
-          edge crops it. Low contrast so it reads as ground, not a headline. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none mt-12 select-none overflow-hidden px-6 md:mt-16 md:px-9"
-      >
-        {/* Wider than its box on purpose so the padded edges still crop it,
-            which is what the type-set version did with negative tracking. */}
-        <Logo
-          reversed
-          alt=""
-          className="w-[104%] max-w-none h-auto opacity-10"
-        />
-      </div>
+          edge crops it. Low contrast so it reads as ground, not a headline —
+          until the cursor lights it. */}
+      <FooterWordmark />
 
       <div className="mx-auto w-full max-w-[1200px] px-6 pt-10 pb-10 md:px-9">
         <div className="flex flex-col gap-4 border-t border-white/10 pt-7 text-[13px] text-white/45 md:flex-row md:items-center md:justify-between">

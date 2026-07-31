@@ -4,8 +4,18 @@ import { useEffect, useState } from 'react'
 import ScrollMorphHero from '@/components/ui/scroll-morph-hero'
 import { POSTERS, POSTER_RATIO, drawPoster } from '@/lib/posters'
 
-// Twenty reads well in the ring and the arc; the full set of 32 crowds both.
-const COUNT = 20
+/**
+ * How many pieces go on the ring.
+ *
+ * Down from 20. The ring's circumference is fixed by the stage height, so
+ * count, card size and gap all compete for the same arc: 20 cards at an 8px
+ * gap drew each one ~100px wide with no air between them. 14 pays for both a
+ * bigger card and a real gap.
+ *
+ * It is not the whole set — POSTERS has more, and the WebGL wall on the home
+ * page shows all of them. This is a selection, which is what the heading says.
+ */
+const COUNT = 14
 
 /**
  * The morph gallery, fed with the same poster artwork the WebGL wall uses.
@@ -40,7 +50,12 @@ export default function DesignShowcase() {
     <ScrollMorphHero
       items={items}
       eyebrow="Selected work"
-      introTitle="Thirty-two pieces, one visual system."
+      /*
+        Counted, not written out. This said "Thirty-two pieces" against a set
+        that has never been 32 — it was 13 when the copy was written and is
+        POSTERS.length now, so the number was wrong in both directions.
+      */
+      introTitle={`${POSTERS.length} pieces, one visual system.`}
       introHint="Scroll to explore"
       activeTitle="Every surface, on brand."
       activeCopy="Posters, packaging, ad creative and social sets — drawn from the same identity so the brand still looks like itself wherever it lands. Hover any card for the detail."
