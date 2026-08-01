@@ -21,20 +21,54 @@ gsap.registerPlugin(ScrollTrigger)
  * neighbours so the wall reads as many brands rather than one list.
  * ──────────────────────────────────────────────────────────────────────────
  */
-// Kept in step with lib/projects.js — this wall and the portfolio rail name
-// the same clients on the same page, so a name dropped from one has to go
-// from the other or the page contradicts itself.
+/*
+  Kept in step with lib/projects.js — this wall and the portfolio rail name the
+  same clients on the same page, so a name dropped from one has to go from the
+  other or the page contradicts itself.
+
+  `logo` is the client's own mark where we have been given one; `className` is
+  the wordmark treatment used when we have not. Five of the eight have a logo,
+  so both paths render side by side and have to sit at the same visual weight —
+  see the grayscale note on the cell below.
+*/
 const CLIENTS = [
-  { name: 'Right Assets', className: 'font-sans font-bold' },
-  { name: 'OpenCredit', className: 'font-sans font-semibold' },
+  {
+    name: 'Right Assets',
+    logo: '/client-logos/Right-assets-management-logo.svg',
+    ratio: 4.27,
+  },
+  {
+    name: 'OpenCredit',
+    logo: '/client-logos/OpenCredit-logo.webp',
+    ratio: 3.01,
+  },
   { name: 'Obapstech', className: 'font-[system-ui] font-extrabold' },
   { name: 'Pixcert', className: 'font-sans font-semibold tracking-[-0.06em]' },
   { name: 'Newkumar', className: 'font-[Georgia,serif] font-bold' },
-  { name: 'Bhoomika Seva', className: 'font-serif font-semibold' },
-  { name: 'Krushiyuga', className: 'font-sans font-bold' },
+  {
+    name: 'Bhoomika Seva Foundation',
+    logo: '/client-logos/bhoomika-seva-foundation-logo.png',
+    ratio: 1,
+  },
+  {
+    name: 'Krushiyuga',
+    logo: '/client-logos/krushiyuga-logo.png',
+    ratio: 4,
+  },
   // A separate client from Krushiyuga above: the farming business and the
   // environmental non-profit are different brands on different sites.
   { name: 'Namma Krushiyuga', className: 'font-serif font-semibold' },
+  /*
+    ⚠ Nithyam Organics appears here on the strength of its logo file alone.
+    It is in neither lib/projects.js nor any earlier version of this list, so
+    unlike the eight above there is nothing in the codebase corroborating the
+    engagement. Remove it if the logo was uploaded for something else.
+  */
+  {
+    name: 'Nithyam Organics',
+    logo: '/client-logos/Nithyam Organics - Small sized logo.png',
+    ratio: 2.25,
+  },
 ]
 
 // 6 × 8 on desktop. Keep it a multiple of 6 so the grid never leaves a ragged
@@ -120,7 +154,46 @@ export default function Clients() {
                     : ''
               }`}
             >
-              {client ? (
+              {client?.logo ? (
+                /*
+                  Plain <img>, not next/image. One of these is an SVG, and
+                  routing an SVG through the image optimiser needs
+                  images.dangerouslyAllowSVG in next.config — a global switch
+                  that would apply to every remote pattern too. Loaded as an
+                  <img> the browser refuses to run scripts inside an SVG, so
+                  this is the safe path and it costs nothing: the five files
+                  total under 100KB once the 691KB PNG is served at 48px.
+
+                  Shown in full colour. Grayscale was tried first — the usual
+                  logo-wall treatment, and it did settle five clashing palettes
+                  next to four grey wordmarks. But desaturating a light mark on
+                  a white cell leaves almost nothing: OpenCredit's pale green
+                  went to near-white and effectively disappeared. Legibility of
+                  the client's actual mark beats tonal tidiness.
+                */
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={client.logo}
+                  alt={client.name}
+                  loading="lazy"
+                  decoding="async"
+                  /*
+                    Capped on both axes, and the height cap depends on shape.
+
+                    A 1:1 mark and a 4.27:1 one cannot share one constraint:
+                    max-width alone lets the square ones tower, and a single
+                    max-height renders Bhoomika's round badge at 42px beside a
+                    140px-wide wordmark — a third of the visual weight. Squarer
+                    marks get more height so the two end up roughly equal in
+                    area, which is what the eye actually compares.
+                  */
+                  className={`max-w-[80%] object-contain transition duration-300 hover:scale-[1.04] ${
+                    client.ratio <= 1.6
+                      ? 'max-h-[56px] lg:max-h-[62px]'
+                      : 'max-h-[38px] lg:max-h-[42px]'
+                  }`}
+                />
+              ) : client ? (
                 <span
                   className={`text-center text-[15px] leading-tight text-ink/80 transition-colors duration-300 hover:text-ink lg:text-base ${client.className}`}
                 >
