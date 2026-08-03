@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
-import Section from '@/components/ui/Section'
-import Reveal, { RevealGroup, revealItem } from '@/components/ui/Reveal'
-import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
-import { SITE } from '@/lib/site'
+import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import Section from "@/components/ui/Section";
+import Reveal, { RevealGroup, revealItem } from "@/components/ui/Reveal";
+import { Accent, Eyebrow, Lede, SectionTitle } from "@/components/ui/Type";
+import { SITE } from "@/lib/site";
 
 // Disciplines we hire into, rather than specific vacancies — swap this for a
 // live openings list once there are roles to name.
 const DISCIPLINES = [
-  { title: 'Web Development', detail: 'React, Next.js, Node.js, WordPress' },
-  { title: 'UI/UX Design', detail: 'Research, wireframes, design systems' },
-  { title: 'Digital Marketing', detail: 'SEO, Google Ads, paid social' },
-  { title: 'Graphic Design', detail: 'Identity, print, packaging, motion' },
-]
+  { title: "Web Development", detail: "React, Next.js, Node.js, WordPress" },
+  { title: "UI/UX Design", detail: "Research, wireframes, design systems" },
+  { title: "Digital Marketing", detail: "SEO, Google Ads, paid social" },
+  { title: "Graphic Design", detail: "Identity, print, packaging, motion" },
+];
 
 export default function Careers() {
   return (
@@ -53,7 +53,9 @@ export default function Careers() {
             </span>
 
             <span className="flex items-center gap-3">
-              <span className="text-[13px] text-muted">{discipline.detail}</span>
+              <span className="text-[13px] text-muted">
+                {discipline.detail}
+              </span>
               <ArrowUpRight
                 size={18}
                 className="text-quiet transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink"
@@ -65,16 +67,16 @@ export default function Careers() {
 
       <Reveal delay={0.1} className="mt-8">
         <Lede className="text-[15px]">
-          Not sure which one fits?{' '}
+          Not sure which one fits?{" "}
           <a
             href={`mailto:${SITE.email}`}
             className="font-medium text-ink underline underline-offset-4"
           >
             Write to {SITE.email}
-          </a>{' '}
+          </a>{" "}
           &mdash; we keep a short list.
         </Lede>
       </Reveal>
     </Section>
-  )
+  );
 }

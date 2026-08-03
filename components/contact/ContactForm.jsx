@@ -1,105 +1,105 @@
-'use client'
+"use client";
 
-import { useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Loader2 } from 'lucide-react'
-import { SITE } from '@/lib/site'
-import { track, trackConversion, EVENTS } from '@/lib/analytics'
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Loader2 } from "lucide-react";
+import { SITE } from "@/lib/site";
+import { track, trackConversion, EVENTS } from "@/lib/analytics";
 
 const SERVICES = [
-  'Website Development',
-  'UI/UX Design',
-  'Digital Marketing',
-  'Graphic Design',
-  'Social Media Management',
-  'E-commerce Development',
-  'Something else',
-]
+  "Website Development",
+  "UI/UX Design",
+  "Digital Marketing",
+  "Graphic Design",
+  "Social Media Management",
+  "E-commerce Development",
+  "Something else",
+];
 
 const EMPTY = {
-  name: '',
-  email: '',
-  phone: '',
-  company: '',
-  service: '',
-  message: '',
-  website: '', // honeypot
-}
+  name: "",
+  email: "",
+  phone: "",
+  company: "",
+  service: "",
+  message: "",
+  website: "", // honeypot
+};
 
 const field =
-  'w-full rounded-xl border border-soft bg-bg px-4 py-3.5 text-[15px] outline-none transition-colors duration-200 placeholder:text-quiet focus:border-ink/30'
+  "w-full rounded-xl border border-soft bg-bg px-4 py-3.5 text-[15px] outline-none transition-colors duration-200 placeholder:text-quiet focus:border-ink/30";
 
 export default function ContactForm() {
-  const router = useRouter()
-  const [values, setValues] = useState(EMPTY)
-  const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle') // idle | sending | sent | error
-  const [failure, setFailure] = useState('')
-  const errorRef = useRef(null)
+  const router = useRouter();
+  const [values, setValues] = useState(EMPTY);
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+  const [failure, setFailure] = useState("");
+  const errorRef = useRef(null);
 
   const update = (key) => (event) => {
-    setValues((v) => ({ ...v, [key]: event.target.value }))
+    setValues((v) => ({ ...v, [key]: event.target.value }));
     // Clear the error as soon as they start fixing it, rather than making
     // them submit again to find out whether it is resolved.
-    setErrors((e) => (e[key] ? { ...e, [key]: undefined } : e))
-  }
+    setErrors((e) => (e[key] ? { ...e, [key]: undefined } : e));
+  };
 
   const submit = async (event) => {
-    event.preventDefault()
-    if (status === 'sending') return
+    event.preventDefault();
+    if (status === "sending") return;
 
-    setStatus('sending')
-    setFailure('')
-    setErrors({})
+    setStatus("sending");
+    setFailure("");
+    setErrors({});
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
-      })
+      });
 
-      const payload = await response.json().catch(() => ({}))
+      const payload = await response.json().catch(() => ({}));
 
       if (response.status === 422 && payload.errors) {
-        setErrors(payload.errors)
-        setStatus('idle')
-        errorRef.current?.focus()
-        return
+        setErrors(payload.errors);
+        setStatus("idle");
+        errorRef.current?.focus();
+        return;
       }
 
       if (!response.ok) {
         // Worth its own event: a spike here means enquiries are being lost to
         // a misconfigured mailer, which is invisible from the GA4 lead count.
-        track(EVENTS.leadFailed, { status: response.status })
-        setFailure(payload.error || 'Something went wrong. Please try again.')
-        setStatus('error')
-        return
+        track(EVENTS.leadFailed, { status: response.status });
+        setFailure(payload.error || "Something went wrong. Please try again.");
+        setStatus("error");
+        return;
       }
 
       // Fired only after the server confirms delivery, so the conversion
       // count reflects enquiries that actually reached the inbox.
       trackConversion(EVENTS.lead, {
-        service: values.service || 'unspecified',
+        service: values.service || "unspecified",
         has_phone: Boolean(values.phone),
-      })
+      });
 
-      setValues(EMPTY)
-      setStatus('sent')
+      setValues(EMPTY);
+      setStatus("sent");
 
       // Client-side push, so the document is never unloaded and the
       // conversion above is safely away before the route changes. The page
       // view on arrival is what Ads counts as a URL-based conversion.
-      router.push('/thank-you')
+      router.push("/thank-you");
     } catch {
-      track(EVENTS.leadFailed, { status: 'network' })
-      setFailure('Could not reach the server. Please check your connection.')
-      setStatus('error')
+      track(EVENTS.leadFailed, { status: "network" });
+      setFailure("Could not reach the server. Please check your connection.");
+      setStatus("error");
     }
-  }
+  };
 
-  if (status === 'sent') {
+  if (status === "sent") {
     return (
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -115,22 +115,25 @@ export default function ContactForm() {
           Thanks — that&rsquo;s with us.
         </h3>
         <p className="text-[15px] leading-[1.5] text-muted">
-          We read everything that comes in and reply within one working day.
-          If it&rsquo;s urgent, call{' '}
-          <a href={SITE.phoneHref} className="text-ink underline underline-offset-4">
+          We read everything that comes in and reply within one working day. If
+          it&rsquo;s urgent, call{" "}
+          <a
+            href={SITE.phoneHref}
+            className="text-ink underline underline-offset-4"
+          >
             {SITE.phone}
           </a>
           .
         </p>
         <button
           type="button"
-          onClick={() => setStatus('idle')}
+          onClick={() => setStatus("idle")}
           className="text-[13px] font-medium text-muted underline underline-offset-4 transition-colors hover:text-ink"
         >
           Send another message
         </button>
       </motion.div>
-    )
+    );
   }
 
   return (
@@ -145,7 +148,7 @@ export default function ContactForm() {
             <input
               type="text"
               value={values.name}
-              onChange={update('name')}
+              onChange={update("name")}
               autoComplete="name"
               placeholder="Your name"
               className={field}
@@ -160,7 +163,7 @@ export default function ContactForm() {
             <input
               type="email"
               value={values.email}
-              onChange={update('email')}
+              onChange={update("email")}
               autoComplete="email"
               placeholder="you@company.com"
               className={field}
@@ -174,7 +177,7 @@ export default function ContactForm() {
             <input
               type="tel"
               value={values.phone}
-              onChange={update('phone')}
+              onChange={update("phone")}
               autoComplete="tel"
               placeholder="+91"
               className={field}
@@ -188,7 +191,7 @@ export default function ContactForm() {
             <input
               type="text"
               value={values.company}
-              onChange={update('company')}
+              onChange={update("company")}
               autoComplete="organization"
               placeholder="Optional"
               className={field}
@@ -202,7 +205,7 @@ export default function ContactForm() {
         input={
           <select
             value={values.service}
-            onChange={update('service')}
+            onChange={update("service")}
             className={`${field} appearance-none`}
           >
             <option value="">Select a service</option>
@@ -222,7 +225,7 @@ export default function ContactForm() {
         input={
           <textarea
             value={values.message}
-            onChange={update('message')}
+            onChange={update("message")}
             rows={6}
             placeholder="What are you building, and by when?"
             className={`${field} resize-y`}
@@ -231,7 +234,10 @@ export default function ContactForm() {
       />
 
       {/* Honeypot — hidden from people, irresistible to bots. */}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+      >
         <label>
           Website
           <input
@@ -239,13 +245,13 @@ export default function ContactForm() {
             tabIndex={-1}
             autoComplete="off"
             value={values.website}
-            onChange={update('website')}
+            onChange={update("website")}
           />
         </label>
       </div>
 
       <AnimatePresence>
-        {status === 'error' && (
+        {status === "error" && (
           <motion.p
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -253,7 +259,7 @@ export default function ContactForm() {
             role="alert"
             className="rounded-xl border border-soft bg-panel px-4 py-3 text-[14px] text-muted"
           >
-            {failure}{' '}
+            {failure}{" "}
             <a
               href={`mailto:${SITE.email}`}
               className="text-ink underline underline-offset-4"
@@ -268,20 +274,23 @@ export default function ContactForm() {
       <div className="flex flex-wrap items-center gap-4 pt-1">
         <button
           type="submit"
-          disabled={status === 'sending'}
+          disabled={status === "sending"}
           className="inline-flex h-12 md:h-14 items-center justify-center gap-2 rounded-full bg-ink px-8 text-[15px] font-semibold text-white transition-transform duration-200 hover:-translate-y-px disabled:opacity-60"
         >
-          {status === 'sending' && (
-            <Loader2 size={16} className="animate-spin motion-reduce:animate-none" />
+          {status === "sending" && (
+            <Loader2
+              size={16}
+              className="animate-spin motion-reduce:animate-none"
+            />
           )}
-          {status === 'sending' ? 'Sending' : 'Send enquiry'}
+          {status === "sending" ? "Sending" : "Send enquiry"}
         </button>
         <span className="text-[13px] text-quiet">
           We reply within one working day.
         </span>
       </div>
     </form>
-  )
+  );
 }
 
 function Field({ label, required, error, input, errorRef }) {
@@ -303,5 +312,5 @@ function Field({ label, required, error, input, errorRef }) {
         </span>
       )}
     </label>
-  )
+  );
 }
