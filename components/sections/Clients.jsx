@@ -22,14 +22,17 @@ gsap.registerPlugin(ScrollTrigger)
  * ──────────────────────────────────────────────────────────────────────────
  */
 /*
-  Kept in step with lib/projects.js — this wall and the portfolio rail name the
-  same clients on the same page, so a name dropped from one has to go from the
-  other or the page contradicts itself.
+  ⚠ This list and lib/projects.js used to name the same clients, and no longer
+  do. Obapstech, Pixcert and Newkumar were removed from the wall at the
+  client's request but remain projects 03, 04 and 05 in lib/projects.js, so the
+  home page still names all three in "Things we've actually shipped" two
+  sections above this one. That is a deliberate divergence, not drift — remove
+  them from projects.js too if they should disappear from the page entirely.
 
   `logo` is the client's own mark where we have been given one; `className` is
-  the wordmark treatment used when we have not. Five of the eight have a logo,
-  so both paths render side by side and have to sit at the same visual weight —
-  see the grayscale note on the cell below.
+  the wordmark treatment used when we have not. All but one now have a logo,
+  but both paths still render side by side and have to sit at the same visual
+  weight — see the sizing note on the cell below.
 */
 const CLIENTS = [
   {
@@ -42,9 +45,6 @@ const CLIENTS = [
     logo: '/client-logos/OpenCredit-logo.webp',
     ratio: 3.01,
   },
-  { name: 'Obapstech', className: 'font-[system-ui] font-extrabold' },
-  { name: 'Pixcert', className: 'font-sans font-semibold tracking-[-0.06em]' },
-  { name: 'Newkumar', className: 'font-[Georgia,serif] font-bold' },
   {
     name: 'Bhoomika Seva Foundation',
     logo: '/client-logos/bhoomika-seva-foundation-logo.png',
@@ -59,15 +59,51 @@ const CLIENTS = [
   // environmental non-profit are different brands on different sites.
   { name: 'Namma Krushiyuga', className: 'font-serif font-semibold' },
   /*
-    ⚠ Nithyam Organics appears here on the strength of its logo file alone.
-    It is in neither lib/projects.js nor any earlier version of this list, so
-    unlike the eight above there is nothing in the codebase corroborating the
-    engagement. Remove it if the logo was uploaded for something else.
+    ⚠ Everything below this line is here on the strength of a logo file alone.
+    None of these appear in lib/projects.js or in any earlier version of this
+    list, so unlike the eight above there is nothing in the codebase
+    corroborating the engagement. Names are read off the artwork. Remove any
+    that were uploaded for a different purpose.
   */
   {
     name: 'Nithyam Organics',
     logo: '/client-logos/Nithyam Organics - Small sized logo.png',
     ratio: 2.25,
+  },
+  { name: 'DS-MAX', logo: '/client-logos/DS-max-logo.png', ratio: 1.15 },
+  {
+    name: 'MySwasthaLife',
+    logo: '/client-logos/Myswasthalife logo.png',
+    ratio: 1,
+  },
+  {
+    name: 'Aryavartha Design Consultants',
+    logo: '/client-logos/aryavartha-logo.png',
+    ratio: 4.44,
+  },
+  {
+    name: 'Babitha Constructions',
+    logo: '/client-logos/babitha-construction-logo.png',
+    ratio: 1.11,
+  },
+  /*
+    `boxed` marks a logo whose own background is baked in and is not white:
+    PureFit is a white wordmark on solid black, Sattva Farm sits on cream.
+    They cannot blend into the cell the way the others do, so they are given a
+    rounded corner and made to fill it — a deliberate tile rather than a
+    rectangle that looks like a transparency bug.
+  */
+  {
+    name: 'PureFit',
+    logo: '/client-logos/PureFit - Logo.png',
+    ratio: 1,
+    boxed: true,
+  },
+  {
+    name: 'Sattva Farm',
+    logo: '/client-logos/SattvaFarm-logo.png',
+    ratio: 1,
+    boxed: true,
   },
 ]
 
@@ -82,13 +118,22 @@ const WALL_SLOTS = 48
   twenty-four rows — 3.8 screens, of which three were empty placeholder dots.
   The wall is meant to read as room to grow, not as a scroll obstacle.
 
-  These keep it six rows wide at every size: 12 at two columns, 24 at four,
-  the full 48 at six. Extra slots are hidden with CSS rather than dropped from
-  the array, so the server and the client render the same markup and the count
-  changes on resize without a re-render.
+  Derived rather than fixed. These were hardcoded at 12 and 24, which was right
+  for eight clients and silently wrong the moment there were more than twelve:
+  a phone would have shown 12 of 15 and hidden three real clients behind a
+  breakpoint. Counting rows from CLIENTS.length means the wall can only ever
+  hide empty cells.
+
+  One spare row past the last client, so there is still visible room to grow.
+  Extra slots are hidden with CSS rather than dropped from the array, so the
+  server and the client render identical markup and the count changes on
+  resize without a re-render.
 */
-const VISIBLE_TO_MD = 12
-const VISIBLE_TO_LG = 24
+const slotsFor = (columns) =>
+  Math.min((Math.ceil(CLIENTS.length / columns) + 1) * columns, WALL_SLOTS)
+
+const VISIBLE_TO_MD = slotsFor(2)
+const VISIBLE_TO_LG = slotsFor(4)
 
 export default function Clients() {
   const gridRef = useRef(null)
@@ -121,7 +166,7 @@ export default function Clients() {
 
   return (
     <Section id="clients">
-      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
         <Reveal className="max-w-[620px]">
           <Eyebrow>Clients</Eyebrow>
           <SectionTitle className="mt-7">
@@ -161,8 +206,9 @@ export default function Clients() {
                   images.dangerouslyAllowSVG in next.config — a global switch
                   that would apply to every remote pattern too. Loaded as an
                   <img> the browser refuses to run scripts inside an SVG, so
-                  this is the safe path and it costs nothing: the five files
-                  total under 100KB once the 691KB PNG is served at 48px.
+                  this is the safe path. It does mean no automatic resizing:
+                  SattvaFarm ships at 2160x2160 and 1.4MB to fill a 62px cell,
+                  which is worth compressing at source.
 
                   Shown in full colour. Grayscale was tried first — the usual
                   logo-wall treatment, and it did settle five clashing palettes
@@ -187,10 +233,22 @@ export default function Clients() {
                     marks get more height so the two end up roughly equal in
                     area, which is what the eye actually compares.
                   */
-                  className={`max-w-[80%] object-contain transition duration-300 hover:scale-[1.04] ${
-                    client.ratio <= 1.6
-                      ? 'max-h-[56px] lg:max-h-[62px]'
-                      : 'max-h-[38px] lg:max-h-[42px]'
+                  className={`object-contain transition duration-300 hover:scale-[1.04] ${
+                    client.boxed
+                      ? // Its own background is the tile, so it fills a fixed
+                        // square and is clipped to a radius. Letting it sit at
+                        // the shared max-width would leave a hard-edged
+                        // rectangle floating in the middle of the cell.
+                        'size-[60px] rounded-lg lg:size-[68px]'
+                      : client.ratio <= 1.6
+                        ? // Squarer marks run larger than the caps alone would
+                          // suggest, because several of these files carry a
+                          // wide transparent margin: MySwasthaLife, DS-MAX and
+                          // Sattva Farm all sit well inside their own canvas,
+                          // so the cap bounds the file rather than the mark.
+                          // Trimming the artwork is the real fix.
+                          'max-h-[66px] max-w-[86%] lg:max-h-[74px]'
+                        : 'max-h-[40px] max-w-[86%] lg:max-h-[46px]'
                   }`}
                 />
               ) : client ? (

@@ -24,6 +24,15 @@ const fragmentShader = /* glsl */ `
   uniform float uTime;
   uniform float uPortrait;
 
+  // Pointer in canvas space (0..1), and how much of the lens to apply. The
+  // strength is separate so the effect can fade in and out without the lens
+  // sliding in from wherever the cursor was last seen.
+  uniform vec2  uPointer;
+  uniform float uPointerFade;
+
+  // 0 at the top of the hero, 1 once it has scrolled a screen away.
+  uniform float uScroll;
+
   varying vec2 vUv;
 
   float hash(vec2 p) {
@@ -31,6 +40,13 @@ const fragmentShader = /* glsl */ `
   }
 
   void main() {
+    /*
+      Held before the portrait rotation below. The lens has to follow the
+      cursor where it actually is on screen, so it is measured in unrotated
+      canvas space while the artwork sampling is not.
+    */
+    vec2 screenUv = vUv;
+
     vec2 uv = vUv;
     vec2 frame = uResolution;
 
@@ -52,14 +68,46 @@ const fragmentShader = /* glsl */ `
       : vec2(0.0, (covered.y - frame.y) * 0.5)) / covered;
     uv = uv * frame / covered + offset;
 
+    /*
+      Scroll depth. A slow push-in as the hero leaves, so the background
+      recedes at a different rate from the type sliding over it — the
+      parallax that makes a flat image read as a layer behind the content
+      rather than part of it.
+
+      Scaled about the centre and kept under 5%: enough to separate the
+      planes, small enough that the composition never visibly reframes.
+    */
+    uv = (uv - 0.5) * (1.0 - uScroll * 0.045) + 0.5;
+
     // Slow crossed sine drift — enough to keep the surface alive without
     // reading as a distortion effect.
     float t = uTime * 0.06;
     float wave = sin(uv.y * 3.0 + t) * 0.0040
                + sin(uv.x * 4.0 - t * 1.3) * 0.0030;
-    vec2 warped = clamp(uv + vec2(wave, wave * 0.5), 0.0, 1.0);
+
+    /*
+      Cursor lens.
+
+      A gaussian falloff around the pointer, aspect-corrected so it stays
+      circular on a wide viewport rather than stretching into an ellipse.
+      The texture is pushed outward along the vector from the cursor, which
+      reads as a soft magnification of whatever sits under it.
+
+      exp(-d*d) rather than smoothstep: it has no hard outer edge, so the
+      effect has nowhere to visibly stop.
+    */
+    vec2 toPointer = (screenUv - uPointer) * vec2(uResolution.x / uResolution.y, 1.0);
+    float lens = exp(-dot(toPointer, toPointer) * 11.0) * uPointerFade;
+    vec2 push = normalize(toPointer + 1e-5) * lens * 0.011;
+
+    vec2 warped = clamp(uv + vec2(wave, wave * 0.5) + push, 0.0, 1.0);
 
     vec3 color = texture2D(uTexture, warped).rgb;
+
+    // The lens lifts as well as displaces. Refraction alone is legible only
+    // where the artwork already has detail; the lift keeps it readable
+    // across the flat areas too.
+    color += lens * 0.05;
 
     // Fine grain, then a slight lift toward white so the black type on top
     // keeps its contrast against the busiest parts of the image.
@@ -111,6 +159,9 @@ export default function HeroCanvas() {
       uTexSize: { value: new THREE.Vector2(1, 1) },
       uTime: { value: 0 },
       uPortrait: { value: 0 },
+      uPointer: { value: new THREE.Vector2(0.5, 0.5) },
+      uPointerFade: { value: 0 },
+      uScroll: { value: 0 },
     }
 
     const geometry = new THREE.PlaneGeometry(2, 2)
@@ -163,6 +214,47 @@ export default function HeroCanvas() {
       }
     )
 
+    /*
+      ── Pointer ─────────────────────────────────────────────────────────
+      Listened for on the window rather than the host. The host sits at z-0
+      under the headline and both CTAs, so a listener on it goes silent
+      exactly where the cursor spends most of its time.
+
+      Only the raw target is recorded here; the smoothing happens in the
+      loop, so a burst of pointermove events costs two assignments rather
+      than a tween each.
+    */
+    let targetX = 0.5
+    let targetY = 0.5
+    let pointerX = 0.5
+    let pointerY = 0.5
+    let targetFade = 0
+    let fade = 0
+
+    const onPointerMove = (event) => {
+      // Fine pointers only. A touch drag would haul the lens across the
+      // hero, and there is no cursor there to justify it.
+      if (event.pointerType !== 'mouse') return
+
+      const rect = host.getBoundingClientRect()
+      const inside =
+        event.clientY >= rect.top && event.clientY <= rect.bottom
+
+      targetFade = inside ? 1 : 0
+      if (!inside) return
+
+      targetX = (event.clientX - rect.left) / rect.width
+      // Flipped: the canvas samples with v running bottom-up.
+      targetY = 1 - (event.clientY - rect.top) / rect.height
+    }
+
+    const onPointerLeave = () => {
+      targetFade = 0
+    }
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    document.addEventListener('pointerleave', onPointerLeave)
+
     let frame
     let last = performance.now()
     let elapsed = 0
@@ -183,6 +275,36 @@ export default function HeroCanvas() {
 
       if (!reducedRef.current) elapsed += delta
       uniforms.uTime.value = elapsed
+
+      if (reducedRef.current) {
+        // Both extras are motion the visitor asked not to see. The drift
+        // above is already frozen by holding `elapsed`.
+        uniforms.uPointerFade.value = 0
+        uniforms.uScroll.value = 0
+      } else {
+        /*
+          Frame-rate independent smoothing. A fixed lerp factor moves twice
+          as far per second at 120Hz as at 60, so the lens would visibly
+          chase harder on a high-refresh display; raising the retained
+          fraction by delta keeps the time constant the same everywhere.
+        */
+        const ease = 1 - Math.pow(0.0015, delta)
+        pointerX += (targetX - pointerX) * ease
+        pointerY += (targetY - pointerY) * ease
+        fade += (targetFade - fade) * (1 - Math.pow(0.02, delta))
+
+        uniforms.uPointer.value.set(pointerX, pointerY)
+        uniforms.uPointerFade.value = fade
+
+        /*
+          Read from the element rather than window.scrollY: Lenis owns the
+          scroll position and drives it on its own schedule, so a cached
+          scroll value would lag the transform actually being painted.
+        */
+        const top = host.getBoundingClientRect().top
+        uniforms.uScroll.value = Math.min(Math.max(-top / host.clientHeight, 0), 1)
+      }
+
       renderer.render(scene, camera)
     }
     frame = requestAnimationFrame(tick)
@@ -191,6 +313,8 @@ export default function HeroCanvas() {
       disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('visibilitychange', onVisibility)
       geometry.dispose()
       material.dispose()

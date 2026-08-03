@@ -22,7 +22,7 @@ export default function Introduction() {
         <Eyebrow>About us</Eyebrow>
       </Reveal>
 
-      <div className="mt-7 grid gap-10 md:grid-cols-12 md:gap-12">
+      <div className="mt-5 grid gap-5 md:mt-7 md:grid-cols-12 md:gap-12">
         <Reveal delay={0.05} className="md:col-span-7">
           <SectionTitle>
             One team for the whole <Accent>digital</Accent> stack.

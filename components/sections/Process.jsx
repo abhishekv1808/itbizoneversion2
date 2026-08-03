@@ -38,7 +38,7 @@ const STEPS = [
 export default function Process() {
   return (
     <Section id="process" className="bg-panel">
-      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
         <Reveal>
           <Eyebrow>How we work</Eyebrow>
           <SectionTitle className="mt-7">

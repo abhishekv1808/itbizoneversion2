@@ -97,7 +97,7 @@ export default function Testimonials() {
 
   return (
     <Section id="testimonials">
-      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
         <Reveal className="max-w-[560px]">
           <Eyebrow>Testimonials</Eyebrow>
           <SectionTitle className="mt-7">

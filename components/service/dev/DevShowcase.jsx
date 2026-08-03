@@ -146,7 +146,7 @@ export default function DevShowcase() {
   return (
     <section id="work" ref={sectionRef} className="overflow-hidden py-20 md:py-28">
       <div className="mx-auto w-full max-w-[1200px] px-6 md:px-9">
-        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
           <Reveal className="max-w-[560px]">
             <Eyebrow>Selected builds</Eyebrow>
             <SectionTitle className="mt-7">

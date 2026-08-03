@@ -103,7 +103,7 @@ export default async function CaseStudyPage({ params }) {
             <span className="text-muted">{project.name}</span>
           </nav>
 
-          <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="mt-8 flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
             <div className="max-w-[760px]">
               <Eyebrow>{project.sector}</Eyebrow>
               <h1 className="mt-6 text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.03] md:tracking-[-0.065em] md:text-[clamp(56px,7vw,72px)] lg:text-[80px]">
