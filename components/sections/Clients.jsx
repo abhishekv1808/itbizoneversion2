@@ -11,14 +11,17 @@ import useReducedMotion from '@/lib/useReducedMotion'
 gsap.registerPlugin(ScrollTrigger)
 
 /**
- * ── FILL ME IN ────────────────────────────────────────────────────────────
- * Only the entries below are verified clients, taken from real project
- * folders. The wall renders WALL_SLOTS cells and leaves the remainder blank
- * on purpose — add a `{ name, className }` object per client and the empty
- * cells disappear from the end as you go.
+ * ── ADDING A CLIENT ───────────────────────────────────────────────────────
+ * Append `{ name, logo, ratio }` where a mark has been supplied, or
+ * `{ name, className }` where it has not — the cell branches on `logo`.
  *
- * `className` is the wordmark treatment. Vary weight and family between
- * neighbours so the wall reads as many brands rather than one list.
+ * `className` is the wordmark treatment for the no-logo case. Vary weight and
+ * family between neighbours so the wall reads as many brands rather than one
+ * list.
+ *
+ * ⚠ The grid takes its length from this array, so it is exactly as long as
+ * the list. Twelve tiles perfectly at 2 / 4 / 6 columns; a thirteenth leaves
+ * a ragged final row at every breakpoint. Add in pairs, or accept the gap.
  * ──────────────────────────────────────────────────────────────────────────
  */
 /*
@@ -107,33 +110,18 @@ const CLIENTS = [
   },
 ]
 
-// 6 × 8 on desktop. Keep it a multiple of 6 so the grid never leaves a ragged
-// final row once the wall is full.
-const WALL_SLOTS = 48
-
 /*
-  How many of those slots are actually shown, per breakpoint.
+  No empty slots any more.
 
-  The grid is 2 / 4 / 6 columns, so rendering all 48 everywhere gave a phone
-  twenty-four rows — 3.8 screens, of which three were empty placeholder dots.
-  The wall is meant to read as room to grow, not as a scroll obstacle.
+  The wall used to render 48 cells and leave the unfilled ones as grey dots,
+  which was meant to read as room to grow. With twelve real clients it read as
+  an unfinished component instead — three screens of placeholder dots on a
+  phone. The grid is now exactly the clients, and the line under it carries
+  the "there are more" idea in words rather than in empty boxes.
 
-  Derived rather than fixed. These were hardcoded at 12 and 24, which was right
-  for eight clients and silently wrong the moment there were more than twelve:
-  a phone would have shown 12 of 15 and hidden three real clients behind a
-  breakpoint. Counting rows from CLIENTS.length means the wall can only ever
-  hide empty cells.
-
-  One spare row past the last client, so there is still visible room to grow.
-  Extra slots are hidden with CSS rather than dropped from the array, so the
-  server and the client render identical markup and the count changes on
-  resize without a re-render.
+  Twelve happens to tile perfectly at every breakpoint: 2 x 6, 4 x 3, 6 x 2,
+  so no row is ever left ragged. Worth knowing before adding a thirteenth.
 */
-const slotsFor = (columns) =>
-  Math.min((Math.ceil(CLIENTS.length / columns) + 1) * columns, WALL_SLOTS)
-
-const VISIBLE_TO_MD = slotsFor(2)
-const VISIBLE_TO_LG = slotsFor(4)
 
 export default function Clients() {
   const gridRef = useRef(null)
@@ -144,8 +132,8 @@ export default function Clients() {
     if (!grid || reducedMotion) return
 
     const ctx = gsap.context(() => {
-      // Rippling out from the middle makes 48 cells land as one gesture
-      // instead of forty-eight separate ones.
+      // Rippling out from the middle lands the grid as one gesture rather
+      // than twelve separate ones.
       gsap.from('[data-cell]', {
         opacity: 0,
         scale: 0.92,
@@ -159,16 +147,11 @@ export default function Clients() {
     return () => ctx.revert()
   }, [reducedMotion])
 
-  const slots = Array.from(
-    { length: WALL_SLOTS },
-    (_, i) => CLIENTS[i] ?? null
-  )
-
   return (
     <Section id="clients">
       <div className="flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
         <Reveal className="max-w-[620px]">
-          <Eyebrow>Clients</Eyebrow>
+          <Eyebrow>Recent clients</Eyebrow>
           <SectionTitle className="mt-7">
             The businesses who <Accent>trusted</Accent> us.
           </SectionTitle>
@@ -187,19 +170,13 @@ export default function Clients() {
           ref={gridRef}
           className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-soft bg-soft md:grid-cols-4 lg:grid-cols-6"
         >
-          {slots.map((client, i) => (
+          {CLIENTS.map((client) => (
             <div
-              key={client?.name ?? `empty-${i}`}
+              key={client.name}
               data-cell
-              className={`flex aspect-[3/2] items-center justify-center bg-bg px-3 transition-colors duration-300 hover:bg-chip ${
-                i >= VISIBLE_TO_LG
-                  ? 'max-lg:hidden'
-                  : i >= VISIBLE_TO_MD
-                    ? 'max-md:hidden'
-                    : ''
-              }`}
+              className="flex aspect-[3/2] items-center justify-center bg-bg px-3 transition-colors duration-300 hover:bg-chip"
             >
-              {client?.logo ? (
+              {client.logo ? (
                 /*
                   Plain <img>, not next/image. One of these is an SVG, and
                   routing an SVG through the image optimiser needs
@@ -251,28 +228,28 @@ export default function Clients() {
                         : 'max-h-[40px] max-w-[86%] lg:max-h-[46px]'
                   }`}
                 />
-              ) : client ? (
+              ) : (
                 <span
                   className={`text-center text-[15px] leading-tight text-ink/80 transition-colors duration-300 hover:text-ink lg:text-base ${client.className}`}
                 >
                   {client.name}
                 </span>
-              ) : (
-                // Empty slot. Reads as grid texture rather than a broken cell.
-                <span
-                  aria-hidden="true"
-                  className="size-1.5 rounded-full bg-soft"
-                />
               )}
             </div>
           ))}
         </div>
       </Reveal>
 
+      {/*
+        Carries the "there is more" idea in words, where the empty cells used
+        to carry it in boxes. Deliberately no figure: the only client count
+        that could be stated here is the length of the array above, and any
+        other number would be invented.
+      */}
       <Reveal delay={0.2} className="mt-6">
         <p className="text-[13px] text-quiet">
-          Showing {CLIENTS.length} of {WALL_SLOTS} &mdash; more added as
-          engagements go public.
+          A recent selection &mdash; {CLIENTS.length} of the businesses we work
+          with. More added as engagements go public.
         </p>
       </Reveal>
     </Section>
