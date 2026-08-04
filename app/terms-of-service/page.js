@@ -4,7 +4,7 @@ import { SITE, SITE_URL } from '@/lib/site'
 import { breadcrumbSchema } from '@/lib/schema'
 
 export const metadata = {
-  title: `Terms of Service — ${SITE.name}`,
+  title: 'Terms of Service',
   description: `Terms and conditions governing the use of ${SITE.name}'s website and services. Last updated July 2026.`,
   alternates: { canonical: '/terms-of-service' },
 }

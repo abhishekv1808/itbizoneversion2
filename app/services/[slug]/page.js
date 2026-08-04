@@ -46,7 +46,7 @@ export async function generateMetadata({ params }) {
   if (!service) return {}
 
   return {
-    title: `${service.name} — ${SITE.name}`,
+    title: service.name,
     description: service.metaDescription,
     alternates: { canonical: `/services/${service.slug}` },
     openGraph: {

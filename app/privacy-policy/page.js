@@ -4,7 +4,7 @@ import { SITE, SITE_URL } from '@/lib/site'
 import { breadcrumbSchema } from '@/lib/schema'
 
 export const metadata = {
-  title: `Privacy Policy — ${SITE.name}`,
+  title: 'Privacy Policy',
   description: `How ${SITE.name} collects, uses and protects the personal data you share with us. Last updated July 2026.`,
   alternates: { canonical: '/privacy-policy' },
 }

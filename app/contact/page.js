@@ -10,7 +10,9 @@ const FULL_ADDRESS = `${SITE.address.line1}, ${SITE.address.line2}, ${SITE.addre
 const MAP_SRC = `https://www.google.com/maps?q=${encodeURIComponent(FULL_ADDRESS)}&output=embed`
 
 export const metadata = {
-  title: `Contact — ${SITE.name}`,
+  // The root layout's title.template appends the brand; spelling it out
+  // here too produced "Contact — ITBIZONE — ITBIZONE".
+  title: 'Contact',
   // Kept under 160 characters so it does not truncate mid-sentence in results.
   description: `Talk to ${SITE.name} about a website, brand or campaign. Bengaluru studio. Written quotations back within one working day.`,
   alternates: { canonical: '/contact' },

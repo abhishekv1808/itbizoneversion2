@@ -25,14 +25,22 @@ export async function generateMetadata({ params }) {
   if (!study) return {}
 
   const { project, tagline } = study
-  const title = `${project.name} — ${project.sector} case study`
+
+  /*
+    Sector deliberately left out of the <title>. "Right Assets Management —
+    Asset Management case study" plus the brand the root template appends came
+    to 64 characters, past the ~60 Google renders before truncating — and the
+    part that got cut was the brand. The sector is still in the description
+    and in the OG title, where the limit is far looser.
+  */
+  const title = `${project.name} case study`
 
   return {
     title,
     description: `${tagline} ${project.summary}`.slice(0, 155),
     alternates: { canonical: `/case-studies/${slug}` },
     openGraph: {
-      title: `${title} — ${SITE.name}`,
+      title: `${project.name} — ${project.sector} case study — ${SITE.name}`,
       description: tagline,
       url: `/case-studies/${slug}`,
       type: 'article',
