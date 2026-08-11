@@ -325,13 +325,12 @@ export default function HeroCanvas() {
 
   return (
     <div ref={hostRef} className="absolute inset-0 z-0 overflow-hidden">
-      {/* Fallback layer: covers no-WebGL, texture errors, and the pre-load
-          frames. The canvas fades in over the top once it has something. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat max-md:top-1/2 max-md:left-1/2 max-md:h-[100vw] max-md:w-[1000px] max-md:-translate-x-1/2 max-md:-translate-y-1/2 max-md:rotate-90"
-        style={{ backgroundImage: `url(${HERO_IMAGE})` }}
-      />
+      {/*
+        No fallback layer here any more — HeroBackdrop renders the image for
+        every visitor and sits underneath. This canvas fades in over it once
+        the texture has arrived, so a WebGL failure or a slow texture simply
+        leaves the backdrop showing rather than a blank hero.
+      */}
       <canvas
         ref={canvasRef}
         aria-hidden="true"

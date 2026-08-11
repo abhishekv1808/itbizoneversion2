@@ -1,5 +1,7 @@
 import { SITE } from '@/lib/site'
-import NotFoundScene from '@/components/NotFoundScene'
+// Client wrapper, not the scene itself — see the note in NotFoundLazy for why
+// that keeps three.js out of every other route's bundle.
+import NotFoundLazy from '@/components/NotFoundLazy'
 
 export const metadata = {
   title: `Page Not Found — ${SITE.name}`,
@@ -7,5 +9,5 @@ export const metadata = {
 }
 
 export default function NotFound() {
-  return <NotFoundScene />
+  return <NotFoundLazy />
 }

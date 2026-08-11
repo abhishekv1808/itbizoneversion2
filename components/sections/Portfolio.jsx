@@ -6,7 +6,14 @@ import { useLenis } from 'lenis/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowDown, ArrowUpRight } from 'lucide-react'
-import PortfolioCanvas from '@/components/PortfolioCanvas'
+import dynamic from 'next/dynamic'
+import useWebGLWorthIt from '@/lib/useWebGLWorthIt'
+
+// Another static three.js import, and another 532KB of parse on a phone for
+// a decorative canvas. Loaded only where useWebGLWorthIt says it earns it.
+const PortfolioCanvas = dynamic(() => import('@/components/PortfolioCanvas'), {
+  ssr: false,
+})
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 import { PROJECTS } from '@/lib/projects'
 
@@ -22,6 +29,7 @@ export default function Portfolio() {
   const trackRef = useRef(null)
   const fillRef = useRef(null)
   const progressRef = useRef(0)
+  const webglWorthIt = useWebGLWorthIt()
   const skewRef = useRef(null)
 
   useEffect(() => {
@@ -133,7 +141,7 @@ export default function Portfolio() {
       id="work"
       className="relative isolate overflow-hidden bg-panel"
     >
-      <PortfolioCanvas progressRef={progressRef} />
+      {webglWorthIt ? <PortfolioCanvas progressRef={progressRef} /> : null}
 
       <div className="relative z-10 flex min-h-screen flex-col justify-center py-20 md:py-24">
         <header className="mx-auto w-full max-w-[1200px] shrink-0 px-6 md:px-9">

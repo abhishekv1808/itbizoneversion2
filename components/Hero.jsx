@@ -5,13 +5,24 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import gsap from 'gsap'
 import { SplitText } from 'gsap/SplitText'
 import { ArrowDown } from 'lucide-react'
-import HeroCanvas from './HeroCanvas'
+import dynamic from 'next/dynamic'
+import HeroBackdrop from './HeroBackdrop'
 import CurvedLines from './CurvedLines'
 import Marquee from './Marquee'
 import BookCall from './ui/BookCall'
 import Magnetic from './ui/Magnetic'
 import { SITE } from '@/lib/site'
 import useReducedMotion from '@/lib/useReducedMotion'
+import useWebGLWorthIt from '@/lib/useWebGLWorthIt'
+
+/*
+  three.js is a 532KB chunk, and it was a static import here — so every phone
+  parsed it before the page could respond, which is where the six seconds of
+  blocking time came from. Loading it dynamically means the chunk is only
+  requested on the devices that render it at all; on everything else the CSS
+  backdrop below is the whole hero background and three.js is never fetched.
+*/
+const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false })
 
 gsap.registerPlugin(SplitText)
 
@@ -44,6 +55,7 @@ export default function Hero() {
   const hostRef = useRef(null)
   const headlineRef = useRef(null)
   const reducedMotion = useReducedMotion()
+  const webglWorthIt = useWebGLWorthIt()
 
   /*
     Masked line reveal, replacing the opacity fade the headline used to share
@@ -105,7 +117,9 @@ export default function Hero() {
       ref={hostRef}
       className="relative isolate flex min-h-[620px] flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16 text-center md:min-h-[850px] md:px-8 md:py-35 lg:px-9 lg:py-40"
     >
-      <HeroCanvas />
+      {/* Always painted, and the LCP element. The canvas fades in over it. */}
+      <HeroBackdrop />
+      {webglWorthIt ? <HeroCanvas /> : null}
       <CurvedLines />
 
       <motion.div

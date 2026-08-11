@@ -9,6 +9,7 @@ import Section from '@/components/ui/Section'
 import Reveal from '@/components/ui/Reveal'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 import useReducedMotion from '@/lib/useReducedMotion'
+import useWebGLWorthIt from '@/lib/useWebGLWorthIt'
 import { POSTERS, drawPoster } from '@/lib/posters'
 
 // three.js is a large dependency for a section most visitors scroll past —
@@ -24,6 +25,13 @@ export default function DesignGallery() {
   const [active, setActive] = useState(null)
   const [selected, setSelected] = useState(null)
   const reducedMotion = useReducedMotion()
+  /*
+    The flat grid was already the reduced-motion path; it is now the mobile
+    path too. It shows the same 22 pieces from the same data, so a phone loses
+    the drag-to-explore field and keeps everything that was on it — without
+    downloading three.js to get there.
+  */
+  const webglWorthIt = useWebGLWorthIt()
   const lenis = useLenis()
 
   // Stable identities — GalleryGrid rebuilds its whole scene when these
@@ -65,7 +73,7 @@ export default function DesignGallery() {
       </div>
 
       <Reveal delay={0.15} className="mt-10">
-        {reducedMotion ? (
+        {reducedMotion || !webglWorthIt ? (
           <PosterGrid onSelect={setSelected} />
         ) : (
           <GalleryGrid
@@ -77,7 +85,7 @@ export default function DesignGallery() {
 
       {/* The canvas is opaque to screen readers and crawlers, so the same
           pieces are listed in text. Mirrors what the WebGL field shows. */}
-      {!reducedMotion && (
+      {!reducedMotion && webglWorthIt && (
         <ul className="sr-only">
           {POSTERS.map((poster) => (
             <li key={poster.id}>
@@ -89,7 +97,7 @@ export default function DesignGallery() {
 
       {/* Reserved height stops the caption appearing and disappearing from
           shifting everything below it as the cursor moves. */}
-      {!reducedMotion && (
+      {!reducedMotion && webglWorthIt && (
         <div className="mt-6 flex h-6 items-center justify-center">
           <AnimatePresence mode="wait">
             {active && (
