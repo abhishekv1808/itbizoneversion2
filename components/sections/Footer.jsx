@@ -10,12 +10,15 @@ const COLUMNS = [
   {
     heading: 'Services',
     links: [
+      // Same order as the header nav and the home page's service cards.
+      // Google weighs how consistently a site links its own pages, so these
+      // three lists agreeing is worth more than any one of them alone.
       { label: 'Website Development', href: '/services/website-development' },
-      { label: 'UI/UX Design', href: '/services/ui-ux-design' },
-      { label: 'Digital Marketing', href: '/services/digital-marketing' },
       { label: 'Graphic Design', href: '/services/graphic-design' },
-      { label: 'Social Media', href: '/services/social-media-management' },
-      { label: 'E-commerce', href: '/services/ecommerce-development' },
+      { label: 'Social Media Management', href: '/services/social-media-management' },
+      { label: 'Digital Marketing', href: '/services/digital-marketing' },
+      { label: 'UI/UX Design', href: '/services/ui-ux-design' },
+      { label: 'E-commerce Development', href: '/services/ecommerce-development' },
     ],
   },
   {

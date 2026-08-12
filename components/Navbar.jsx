@@ -1,32 +1,52 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useLenis } from 'lenis/react'
 import { ChevronUp } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import SectionLink from '@/components/ui/SectionLink'
 import { SITE } from '@/lib/site'
 
+/*
+  The primary navigation, and the order matters beyond this menu.
+
+  Google builds sitelinks largely from a site's primary nav and from how
+  consistently the same pages are linked across it. These six are listed in
+  the order we want them considered, and the footer's Services column and the
+  home page's service cards are kept in the same sequence.
+
+  Real routes first, on-page anchors after: an anchor is not a page Google can
+  offer as a sitelink, so putting #work and #about above the service pages was
+  spending the most prominent slots on links that can never appear.
+
+  E-commerce Development is deliberately not here. It is a real page and stays
+  linked from the footer and the services grid, but every extra entry dilutes
+  the six that matter.
+*/
 const LINKS = [
-  { label: 'Services', href: '#services' },
-  { label: 'Work', href: '#work' },
-  { label: 'Design', href: '#design' },
-  { label: 'Industries', href: '#industries' },
-  { label: 'About', href: '#about' },
-  { label: 'Why us', href: '#why' },
-  // Real routes, not sections — flagged so they render as plain links.
-  { label: 'Pricing', href: '/quote', route: true },
+  { label: 'Website Development', href: '/services/website-development', route: true },
+  { label: 'Graphic Design', href: '/services/graphic-design', route: true },
+  { label: 'Social Media Management', href: '/services/social-media-management', route: true },
+  { label: 'Digital Marketing', href: '/services/digital-marketing', route: true },
+  { label: 'UI/UX Design', href: '/services/ui-ux-design', route: true },
   { label: 'Contact', href: '/contact', route: true },
+
+  // Secondary: on-page sections, and the estimator.
+  { label: 'Selected work', href: '#work' },
+  { label: 'About', href: '#about' },
+  { label: 'Pricing', href: '/quote', route: true },
 ]
 
 const overlay = {
-  hidden: { opacity: 0 },
+  // visibility, not just opacity: an opacity-0 layer still covers the page and
+  // swallows every click behind it.
+  hidden: { opacity: 0, visibility: 'hidden' },
   show: {
     opacity: 1,
+    visibility: 'visible',
     transition: { duration: 0.4, ease: 'easeOut', staggerChildren: 0.05 },
   },
-  exit: { opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } },
 }
 
 const linkItem = {
@@ -133,15 +153,35 @@ export default function Navbar() {
         </div>
       </header>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            variants={overlay}
-            initial="hidden"
-            animate="show"
-            exit="exit"
-            className="fixed inset-0 z-99 flex flex-col bg-bg"
-          >
+      {/*
+        Always in the DOM, shown and hidden with animation rather than mounted
+        and unmounted.
+
+        Mounting on open meant the site's entire primary navigation was absent
+        from the served HTML — a crawler saw a logo and a Menu button and no
+        nav at all, which is the strongest single signal Google uses to build
+        sitelinks. The same fix the FAQ answers needed, for the same reason.
+
+        `inert` while closed keeps the links out of the tab order and out of
+        the accessibility tree, so nothing is reachable that is not visible.
+      */}
+      <motion.div
+        id="primary-navigation"
+        /*
+          React 19 takes `inert` as a boolean; an empty string is dropped and
+          the attribute never renders. visibility:hidden already removes the
+          links from the tab order, so this is belt and braces — but the two
+          should not disagree.
+        */
+        inert={!open}
+        aria-hidden={open ? undefined : 'true'}
+        variants={overlay}
+        initial="hidden"
+        animate={open ? 'show' : 'hidden'}
+        className={`fixed inset-0 z-99 flex flex-col bg-bg ${
+          open ? '' : 'pointer-events-none'
+        }`}
+      >
             <nav className="flex flex-1 flex-col items-center justify-center gap-1">
               {LINKS.map((link) => {
                 const style =
@@ -168,13 +208,11 @@ export default function Navbar() {
               })}
             </nav>
 
-            <div className="border-t border-soft px-5 py-6 text-center text-[13px] text-muted md:px-9 md:py-7">
-              &copy; {new Date().getFullYear()} {SITE.name} &mdash; All rights
-              reserved.
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <div className="border-t border-soft px-5 py-6 text-center text-[13px] text-muted md:px-9 md:py-7">
+          &copy; {new Date().getFullYear()} {SITE.name} &mdash; All rights
+          reserved.
+        </div>
+      </motion.div>
     </>
   )
 }

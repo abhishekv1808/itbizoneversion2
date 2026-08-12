@@ -11,8 +11,14 @@ import useReducedMotion from '@/lib/useReducedMotion'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// The four headline services carried over from itbizone.com, plus the two
-// lines the v1 pricing engine already quoted separately.
+/*
+  The four headline services carried over from itbizone.com, plus the two lines
+  the v1 pricing engine already quoted separately.
+
+  Order matches the header nav and the footer's Services column. Google weighs
+  how consistently a site links its own pages when deciding what to offer as a
+  sitelink, so the three lists agreeing is worth more than any one of them.
+*/
 const SERVICES = [
   {
     id: '01',
@@ -23,31 +29,31 @@ const SERVICES = [
   },
   {
     id: '02',
-    title: 'UI/UX Design',
-    copy: 'Research, flows and interface design that decide what the product does before anyone argues about what it looks like.',
-    tags: ['User flows', 'Wireframes', 'Prototypes'],
-    href: '/services/ui-ux-design',
-  },
-  {
-    id: '03',
-    title: 'Digital Marketing',
-    copy: 'SEO, Google Ads and paid social run against tracked numbers — leads and conversions, not impressions.',
-    tags: ['SEO', 'Google Ads', 'PPC'],
-    href: '/services/digital-marketing',
-  },
-  {
-    id: '04',
     title: 'Graphic Design',
     copy: 'Logos, brand identity, print and packaging, with the guidelines that keep it all consistent once your team grows.',
     tags: ['Identity', 'Print', 'Packaging'],
     href: '/services/graphic-design',
   },
   {
-    id: '05',
+    id: '03',
     title: 'Social Media Management',
     copy: 'Strategy, content calendars and community management, reported monthly against growth and engagement.',
     tags: ['Content', 'Campaigns', 'Reporting'],
     href: '/services/social-media-management',
+  },
+  {
+    id: '04',
+    title: 'Digital Marketing',
+    copy: 'SEO, Google Ads and paid social run against tracked numbers — leads and conversions, not impressions.',
+    tags: ['SEO', 'Google Ads', 'PPC'],
+    href: '/services/digital-marketing',
+  },
+  {
+    id: '05',
+    title: 'UI/UX Design',
+    copy: 'Research, flows and interface design that decide what the product does before anyone argues about what it looks like.',
+    tags: ['User flows', 'Wireframes', 'Prototypes'],
+    href: '/services/ui-ux-design',
   },
   {
     id: '06',

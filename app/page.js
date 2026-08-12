@@ -14,7 +14,7 @@ import WhyUs from '@/components/sections/WhyUs'
 import Testimonials from '@/components/sections/Testimonials'
 import Careers from '@/components/sections/Careers'
 import ContactCTA from '@/components/sections/ContactCTA'
-import { organisationSchema, websiteSchema } from '@/lib/schema'
+import { organisationSchema, websiteSchema, navigationSchema } from '@/lib/schema'
 
 export default function Page() {
   return (
@@ -25,7 +25,11 @@ export default function Page() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([organisationSchema(), websiteSchema()]),
+          __html: JSON.stringify([
+            organisationSchema(),
+            websiteSchema(),
+            navigationSchema(),
+          ]),
         }}
       />
 

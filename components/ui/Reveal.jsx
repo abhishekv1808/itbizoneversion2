@@ -6,6 +6,26 @@ import { motion, useInView } from 'framer-motion'
 const EASE = [0.22, 1, 0.36, 1]
 const MARGIN = '-70px 0px'
 
+/*
+  How long content may stay hidden before it is revealed regardless of scroll.
+
+  Every section below the hero starts at opacity 0 and fades in on scroll. A
+  renderer that never scrolls therefore sees only the hero and the footer — and
+  Googlebot is exactly that. It was picking sitelink descriptions out of the
+  footer ("Facebook · X · WhatsApp… Back to top") because the footer was the
+  only substantial text visible to it; on a service page 31 elements carrying
+  all the pillars, process steps and deliverables were invisible.
+
+  A real visitor is unaffected in practice: what this reveals early is content
+  below the fold, which they cannot see until they scroll — and by the time
+  they idle this long, the animation for the next screen is a detail against
+  having the page described correctly in search.
+
+  2.5s is comfortably inside Googlebot's render budget and long enough that
+  most visitors have started scrolling first.
+*/
+const REVEAL_ANYWAY_MS = 2500
+
 /**
  * Resolves to true once the element has been seen — and stays true.
  *
@@ -33,7 +53,14 @@ function useSeen(ref) {
 
     check()
     window.addEventListener('scroll', check, { passive: true })
-    return () => window.removeEventListener('scroll', check)
+
+    // Fallback for anything that is never scrolled to — see REVEAL_ANYWAY_MS.
+    const timer = setTimeout(() => setSeen(true), REVEAL_ANYWAY_MS)
+
+    return () => {
+      window.removeEventListener('scroll', check)
+      clearTimeout(timer)
+    }
   }, [seen, ref])
 
   return seen
