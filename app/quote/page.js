@@ -1,36 +1,20 @@
 import { ChevronRight } from 'lucide-react'
 import QuoteBuilder from '@/components/quote/QuoteBuilder'
 import { Accent } from '@/components/ui/Type'
-import { SITE, SITE_URL } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
+import { breadcrumbSchema } from '@/lib/schema'
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Build an estimate',
   // Under 160 characters so it does not truncate mid-sentence in results.
   description:
     'Pick what you need and see an indicative price range instantly, from our published catalogue. Websites, design, marketing and e-commerce.',
-  alternates: { canonical: '/quote' },
-  openGraph: {
-    title: `Build an estimate — ${SITE.name}`,
-    description:
-      'Pick what you need, see a price range instantly, and get an itemised written quotation back.',
-    url: '/quote',
-    type: 'website',
-  },
-}
+  path: '/quote',
+  socialDescription:
+    'Pick what you need, see a price range instantly, and get an itemised written quotation back.',
+})
 
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
-    {
-      '@type': 'ListItem',
-      position: 2,
-      name: 'Build an estimate',
-      item: `${SITE_URL}/quote`,
-    },
-  ],
-}
+const schema = breadcrumbSchema([{ name: 'Build an estimate', path: '/quote' }])
 
 export default function QuotePage() {
   return (

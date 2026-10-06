@@ -10,6 +10,8 @@ import {
   nextCaseStudy,
 } from '@/lib/caseStudies'
 import { SITE, SITE_URL } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
+import { projectAlt } from '@/lib/projects'
 import { breadcrumbSchema, orgRef } from '@/lib/schema'
 
 const hostOf = (url) => url?.replace(/^https?:\/\//, '').replace(/\/$/, '')
@@ -35,17 +37,14 @@ export async function generateMetadata({ params }) {
   */
   const title = `${project.name} case study`
 
-  return {
+  return pageMetadata({
     title,
     description: `${tagline} ${project.summary}`.slice(0, 155),
-    alternates: { canonical: `/case-studies/${slug}` },
-    openGraph: {
-      title: `${project.name} — ${project.sector} case study — ${SITE.name}`,
-      description: tagline,
-      url: `/case-studies/${slug}`,
-      type: 'article',
-    },
-  }
+    path: `/case-studies/${slug}`,
+    socialTitle: `${project.name} — ${project.sector} case study | ${SITE.name}`,
+    socialDescription: tagline,
+    type: 'article',
+  })
 }
 
 export default async function CaseStudyPage({ params }) {
@@ -148,7 +147,7 @@ export default async function CaseStudyPage({ params }) {
               {project.screenshot ? (
                 <Image
                   src={project.screenshot}
-                  alt={`${project.name} — ${project.sector} website`}
+                  alt={projectAlt(project)}
                   fill
                   priority
                   sizes="(max-width: 1200px) 100vw, 1200px"
@@ -248,7 +247,8 @@ export default async function CaseStudyPage({ params }) {
                   <div className="overflow-hidden rounded-2xl border border-soft bg-bg">
                     <Image
                       src={shot.src}
-                      alt={shot.caption}
+                      // The caption alone never named the site it shows.
+                      alt={`${project.name} website: ${shot.caption}`}
                       width={shot.width}
                       height={shot.height}
                       sizes="(max-width: 1200px) 100vw, 1200px"

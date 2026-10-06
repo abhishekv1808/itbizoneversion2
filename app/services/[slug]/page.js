@@ -14,8 +14,8 @@ import CaseStudies from '@/components/sections/CaseStudies'
 import DesignGallery from '@/components/sections/DesignGallery'
 import DesignShowcase from '@/components/sections/DesignShowcase'
 import { getService, SERVICE_SLUGS } from '@/lib/services'
-import { SITE } from '@/lib/site'
-import { breadcrumbSchema, serviceSchema } from '@/lib/schema'
+import { pageMetadata } from '@/lib/metadata'
+import { breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/schema'
 
 /** Keys usable in a service's `layout`. */
 const BLOCKS = {
@@ -45,16 +45,13 @@ export async function generateMetadata({ params }) {
   const service = getService(slug)
   if (!service) return {}
 
-  return {
-    title: service.name,
+  // "Website Development Company in Bengaluru | ITBIZONE" — the service and
+  // the city, which is the query, rather than the bare service name.
+  return pageMetadata({
+    title: service.seoTitle,
     description: service.metaDescription,
-    alternates: { canonical: `/services/${service.slug}` },
-    openGraph: {
-      title: `${service.name} — ${SITE.name}`,
-      description: service.metaDescription,
-      type: 'website',
-    },
-  }
+    path: `/services/${service.slug}`,
+  })
 }
 
 export default async function ServicePage({ params }) {
@@ -63,45 +60,42 @@ export default async function ServicePage({ params }) {
 
   if (!service) notFound()
 
-  // Lets the FAQ answers qualify for rich results rather than sitting inside
-  // a collapsed accordion that crawlers score as hidden content.
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: service.faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.q,
-      acceptedAnswer: { '@type': 'Answer', text: faq.a },
-    })),
-  }
+  /*
+    provider is an @id reference to the single organisation node the root
+    layout emits, not a restatement of the company — see lib/schema.js.
 
-  // provider is an @id reference to the single organisation node, not a
-  // restatement of the company — see lib/schema.js.
-  const service_ = serviceSchema(service)
-  const crumbs = breadcrumbSchema([
-    { name: 'Services', path: '/#services' },
-    { name: service.name, path: `/services/${service.slug}` },
-  ])
+    The FAQ markup is built from the same `service.faqs` the accordion
+    renders, so the marked-up text is the visible text. It is only emitted
+    when the page actually shows the FAQ block.
+  */
+  const schema = [
+    serviceSchema(service),
+    breadcrumbSchema([
+      { name: 'Services', path: '/#services' },
+      { name: service.name, path: `/services/${service.slug}` },
+    ]),
+  ]
+  if (service.layout.includes('faq') && service.faqs?.length) {
+    schema.push(faqSchema(service.faqs))
+  }
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([service_, faqSchema, crumbs]),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
 
       {service.heroVariant === 'immersive' ? (
-        <DevHero />
+        <DevHero service={service} />
       ) : (
         <ServiceHero service={service} />
       )}
 
       {/*
-        Section order comes from the service's own `layout`, so the six pages
+        Section order comes from the service's own `layout`, so the pages
         argue in the order that suits them — a visual service leads with the
-        photograph, a measurable one leads with method — instead of all six
+        photograph, a measurable one leads with method — instead of all of them
         running the identical template. Sections that render nothing (proof
         without case studies) simply drop out.
       */}

@@ -12,8 +12,8 @@ import useReducedMotion from '@/lib/useReducedMotion'
 gsap.registerPlugin(ScrollTrigger)
 
 /*
-  The four headline services carried over from itbizone.com, plus the two lines
-  the v1 pricing engine already quoted separately.
+  The four headline services carried over from itbizone.com, the two lines
+  the v1 pricing engine already quoted separately, and app development.
 
   Order matches the header nav and the footer's Services column. Google weighs
   how consistently a site links its own pages when deciding what to offer as a
@@ -29,40 +29,60 @@ const SERVICES = [
   },
   {
     id: '02',
+    title: 'App Development',
+    copy: 'Android and iOS apps, web apps and the admin dashboards behind them — software that runs part of the business.',
+    tags: ['Android & iOS', 'Web apps', 'Dashboards'],
+    href: '/services/app-development',
+  },
+  {
+    id: '03',
     title: 'Graphic Design',
     copy: 'Logos, brand identity, print and packaging, with the guidelines that keep it all consistent once your team grows.',
     tags: ['Identity', 'Print', 'Packaging'],
     href: '/services/graphic-design',
   },
   {
-    id: '03',
+    id: '04',
     title: 'Social Media Management',
     copy: 'Strategy, content calendars and community management, reported monthly against growth and engagement.',
     tags: ['Content', 'Campaigns', 'Reporting'],
     href: '/services/social-media-management',
   },
   {
-    id: '04',
+    id: '05',
     title: 'Digital Marketing',
     copy: 'SEO, Google Ads and paid social run against tracked numbers — leads and conversions, not impressions.',
     tags: ['SEO', 'Google Ads', 'PPC'],
     href: '/services/digital-marketing',
   },
   {
-    id: '05',
+    id: '06',
     title: 'UI/UX Design',
     copy: 'Research, flows and interface design that decide what the product does before anyone argues about what it looks like.',
     tags: ['User flows', 'Wireframes', 'Prototypes'],
     href: '/services/ui-ux-design',
   },
   {
-    id: '06',
+    id: '07',
     title: 'E-commerce Development',
     copy: 'Storefronts with payment gateways, inventory and analytics wired in — from first catalogue to checkout.',
     tags: ['Storefronts', 'Payments', 'Inventory'],
     href: '/services/ecommerce-development',
   },
 ]
+
+/*
+  Seven cards do not fill a 2- or 3-column grid, and the grid's gap colour
+  would show through the empty cells as a grey block. So two cards widen to
+  close the rows: at 3 columns the first and last span two (3 + 3 + 3), at 2
+  columns the last spans both (2 + 2 + 2 + 2 — the first card's span is
+  lg-only).
+*/
+function spanFor(index, count) {
+  if (index === 0) return 'lg:col-span-2'
+  if (index === count - 1) return 'md:col-span-2'
+  return ''
+}
 
 export default function Services() {
   const gridRef = useRef(null)
@@ -200,7 +220,7 @@ export default function Services() {
         <Reveal className="max-w-[620px]">
           <Eyebrow>What we do</Eyebrow>
           <SectionTitle className="mt-7">
-            Six services, <Accent>one</Accent> team.
+            Seven services, <Accent>one</Accent> team.
           </SectionTitle>
         </Reveal>
 
@@ -216,11 +236,11 @@ export default function Services() {
         ref={gridRef}
         className="mt-10 grid gap-px overflow-hidden rounded-3xl border border-soft bg-soft md:mt-14 md:grid-cols-2 lg:grid-cols-3"
       >
-        {SERVICES.map((service) => (
+        {SERVICES.map((service, i) => (
           <article
             key={service.id}
             data-card
-            className="group relative isolate flex flex-col bg-bg p-6 md:p-7 lg:p-8"
+            className={`group relative isolate flex flex-col bg-bg p-6 md:p-7 lg:p-8 ${spanFor(i, SERVICES.length)}`}
           >
             {/*
               The cursor light. pointer-events-none so it never intercepts the

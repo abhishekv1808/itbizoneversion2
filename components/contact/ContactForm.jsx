@@ -9,6 +9,7 @@ import { track, trackConversion, EVENTS } from "@/lib/analytics";
 
 const SERVICES = [
   "Website Development",
+  "App Development",
   "UI/UX Design",
   "Digital Marketing",
   "Graphic Design",

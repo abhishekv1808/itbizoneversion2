@@ -8,6 +8,7 @@ import Section from '@/components/ui/Section'
 import Reveal from '@/components/ui/Reveal'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 import { CASE_STUDIES } from '@/lib/caseStudies'
+import { projectAlt } from '@/lib/projects'
 import useReducedMotion from '@/lib/useReducedMotion'
 
 /**
@@ -55,7 +56,7 @@ function StudyTile({ study, index }) {
             {project.screenshot ? (
               <Image
                 src={project.screenshot}
-                alt={`${project.name} — ${project.sector} website`}
+                alt={projectAlt(project)}
                 fill
                 sizes="(max-width: 810px) 100vw, (max-width: 1200px) 90vw, 1200px"
                 className="object-cover object-top"

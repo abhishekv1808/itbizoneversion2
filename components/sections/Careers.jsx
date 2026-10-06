@@ -16,13 +16,18 @@ const DISCIPLINES = [
   { title: "Graphic Design", detail: "Identity, print, packaging, motion" },
 ];
 
-export default function Careers() {
+/*
+  Rendered as the whole of /careers, not on the home page — see app/page.js.
+  `className` lets the page add clearance for the fixed header, and the title
+  is the page's h1 there.
+*/
+export default function Careers({ className = "" }) {
   return (
-    <Section id="careers">
+    <Section id="careers" className={className}>
       <div className="flex flex-col gap-4 md:flex-row md:gap-8 md:items-end md:justify-between">
         <Reveal className="max-w-[560px]">
           <Eyebrow>Careers</Eyebrow>
-          <SectionTitle className="mt-7">
+          <SectionTitle as="h1" className="mt-7">
             Come build <Accent>with us</Accent>.
           </SectionTitle>
           <Lede className="mt-6 max-w-[430px]">

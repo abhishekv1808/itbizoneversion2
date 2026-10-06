@@ -197,7 +197,7 @@ export default function Clients() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={client.logo}
-                  alt={client.name}
+                  alt={`${client.name} logo`}
                   loading="lazy"
                   decoding="async"
                   /*

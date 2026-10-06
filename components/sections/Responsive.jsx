@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import Section from '@/components/ui/Section'
 import Reveal from '@/components/ui/Reveal'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
-import { PROJECTS } from '@/lib/projects'
+import { PROJECTS, projectAlt } from '@/lib/projects'
 import useReducedMotion from '@/lib/useReducedMotion'
 
 /*
@@ -41,7 +41,7 @@ function Phone({ project, index, progress, reducedMotion }) {
         */}
         <Image
           src={project.mobile.src}
-          alt={`${project.name} — the ${project.sector.toLowerCase()} site on a phone`}
+          alt={projectAlt(project, 'website on a phone')}
           width={project.mobile.width}
           height={project.mobile.height}
           sizes="(max-width: 810px) 60vw, 30vw"

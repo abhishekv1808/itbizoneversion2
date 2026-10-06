@@ -1,4 +1,4 @@
-import { SITE, SITE_URL } from '@/lib/site'
+import { FULL_ADDRESS, SITE, SITE_URL } from '@/lib/site'
 import { SERVICES, SERVICE_SLUGS } from '@/lib/services'
 import { formatINR } from '@/lib/pricing'
 
@@ -33,7 +33,7 @@ export function GET() {
 
   const body = `# ${SITE.name}
 
-> ${SITE.legalName} is a digital agency in Bengaluru, India, building websites, brands and marketing campaigns for businesses that would rather not coordinate four separate vendors. Founded ${SITE.founded}.
+> ${SITE.legalName} is a website and app development company in Bengaluru, India, building websites, apps, brands and marketing campaigns for businesses that would rather not coordinate four separate vendors. Founded ${SITE.founded}.
 
 ${SITE.description}
 
@@ -52,11 +52,11 @@ ${SERVICE_SLUGS.map(serviceLine).join('\n')}
 
 - Legal name: ${SITE.legalName}
 - Founded: ${SITE.founded}
-- Address: ${SITE.address.line1}, ${SITE.address.line2}, ${SITE.address.city}, Karnataka, India
+- Address: ${FULL_ADDRESS}, India
 - Hours: ${SITE.hours}
 - Email: ${SITE.email}
 - Phone: ${SITE.phone}
-- Service area: India, working remotely with clients elsewhere
+- Service area: Bengaluru, working remotely with clients elsewhere in India
 
 ## Contact
 

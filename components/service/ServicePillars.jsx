@@ -10,7 +10,7 @@ import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
  *
  * `grid` is the original 2x2 card block. `rows` stacks them as numbered
  * full-width rules, which reads more like a contents page — services pick
- * whichever suits, so the six pages stop looking like one template.
+ * whichever suits, so the service pages stop looking like one template.
  */
 export default function ServicePillars({ service }) {
   if (service.pillarsVariant === 'rows') return <PillarRows service={service} />
@@ -96,8 +96,8 @@ function PillarRows({ service }) {
 }
 
 /**
- * Each service supplies its own [before, accent, after] heading. Six pages
- * sharing one H2 gave six different queries the same on-page signal.
+ * Each service supplies its own [before, accent, after] heading. Every page
+ * sharing one H2 gave different queries the same on-page signal.
  */
 function PillarHeading({ service }) {
   const [before, accent, after] = service.pillarsTitle ?? [

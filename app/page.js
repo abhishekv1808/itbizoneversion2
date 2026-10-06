@@ -12,24 +12,39 @@ import Industries from '@/components/sections/Industries'
 import Process from '@/components/sections/Process'
 import WhyUs from '@/components/sections/WhyUs'
 import Testimonials from '@/components/sections/Testimonials'
-import Careers from '@/components/sections/Careers'
 import ContactCTA from '@/components/sections/ContactCTA'
-import { organisationSchema, websiteSchema, navigationSchema } from '@/lib/schema'
+import { SITE } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
+import { websiteSchema, navigationSchema } from '@/lib/schema'
 
+const TITLE = `Website & App Development Company in Bengaluru | ${SITE.name}`
+const DESCRIPTION =
+  'Custom website, mobile app and e-commerce development in Bengaluru. Design, build and digital marketing from one team, with a written quote up front.'
+
+export const metadata = pageMetadata({
+  // `absolute` skips the layout's "| ITBIZONE" template — the brand is
+  // already at the end of this one.
+  title: { absolute: TITLE },
+  socialTitle: TITLE,
+  description: DESCRIPTION,
+  path: '/',
+})
+
+/*
+  Careers used to sit between Testimonials and ContactCTA. It now lives at
+  /careers: a hiring section on the home page told Google this was a page
+  about jobs at an IT company, and pulled job seekers in on the same queries
+  buyers use.
+*/
 export default function Page() {
   return (
     <>
-      {/* Local business + organisation markup. This is what feeds the
-          Bengaluru map pack and "near me" results; without it Google has to
-          infer the address from body copy. */}
+      {/* The business node itself is emitted by the root layout; these two
+          only make sense on the home page. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            organisationSchema(),
-            websiteSchema(),
-            navigationSchema(),
-          ]),
+          __html: JSON.stringify([websiteSchema(), navigationSchema()]),
         }}
       />
 
@@ -47,7 +62,6 @@ export default function Page() {
       <Process />
       <WhyUs />
       <Testimonials />
-      <Careers />
       <ContactCTA />
     </>
   )

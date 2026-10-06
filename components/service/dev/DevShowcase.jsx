@@ -6,7 +6,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Reveal from '@/components/ui/Reveal'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
-import { PROJECTS } from '@/lib/projects'
+import { PROJECTS, projectAlt } from '@/lib/projects'
 import useReducedMotion from '@/lib/useReducedMotion'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -71,7 +71,7 @@ function BrowserFrame({ project }) {
           {project.screenshot ? (
             <Image
               src={project.screenshot}
-              alt={`${project.name} — ${project.sector} website`}
+              alt={projectAlt(project)}
               width={520}
               height={0}
               sizes="(max-width: 640px) 78vw, (max-width: 1024px) 440px, 520px"

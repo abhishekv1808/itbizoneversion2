@@ -7,34 +7,22 @@ import Section from '@/components/ui/Section'
 import Reveal from '@/components/ui/Reveal'
 import Monogram from '@/components/ui/Monogram'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
-
-// PLACEHOLDER — carried over from the v1 site, which used them as samples.
-// Replace with real, attributable quotes before launch. Invented testimonials
-// are the one kind of placeholder a prospect can disprove in a single search.
-const TESTIMONIALS = [
-  {
-    quote:
-      'ITBIZONE transformed our digital presence completely. The site, the branding and the ad campaigns finally pull in the same direction.',
-    name: 'Rajesh Kumar',
-    role: 'CEO, TechStart Bangalore',
-  },
-  {
-    quote:
-      'Their e-commerce build handled our first festive season without a single checkout failure. That alone paid for the project.',
-    name: 'Priya Sharma',
-    role: 'Founder, E-Store Mumbai',
-  },
-  {
-    quote:
-      'Professional and on time. We knew the cost before work started and the number never moved.',
-    name: 'Amit Patel',
-    role: 'Director, FinTech Solutions',
-  },
-]
+import { TESTIMONIALS } from '@/lib/testimonials'
 
 const EASE = [0.22, 1, 0.36, 1]
 
+/*
+  Quotes live in lib/testimonials.js. While that list is empty the section is
+  absent altogether — heading included — rather than showing an empty rail.
+  The check sits in this wrapper so the rail's hooks are never called
+  conditionally.
+*/
 export default function Testimonials() {
+  if (!TESTIMONIALS.length) return null
+  return <TestimonialRail />
+}
+
+function TestimonialRail() {
   const railRef = useRef(null)
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(false)

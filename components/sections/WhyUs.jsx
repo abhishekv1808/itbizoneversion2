@@ -30,7 +30,7 @@ const REASONS = [
     copy: 'Confidentiality runs both ways, and we will keep a project off our portfolio if you ask.',
   },
   {
-    title: 'One team, six services',
+    title: 'One team, seven services',
     copy: 'The people building the site are the people running the campaigns. Nothing gets lost between vendors.',
   },
 ]

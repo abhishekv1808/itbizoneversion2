@@ -26,6 +26,11 @@ const GUARANTEES = [
  * still reachable from the footer for anyone who prefers it.
  */
 export default function ServiceQuote({ service }) {
+  // A service without its own catalogue (app development) names the one that
+  // carries its line items; otherwise the estimator opens on this service.
+  const estimateSlug = service.groups?.length ? service.slug : service.estimateSlug
+  const estimateHref = estimateSlug ? `/quote?service=${estimateSlug}` : '/quote'
+
   return (
     <section
       id="quote"
@@ -64,7 +69,7 @@ export default function ServiceQuote({ service }) {
           <p className="mt-6 text-[15px] text-muted">
             Want a figure first?{' '}
             <a
-              href={`/quote?service=${service.slug}`}
+              href={estimateHref}
               className="font-medium text-ink underline underline-offset-4"
             >
               Build an estimate in a minute

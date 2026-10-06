@@ -7,6 +7,7 @@ import WhatsAppFab from '@/components/ui/WhatsAppFab'
 import Footer from '@/components/sections/Footer'
 import { SITE, SITE_URL } from '@/lib/site'
 import { HERO_IMAGE, HERO_SIZES, HERO_SRCSET } from '@/lib/assets'
+import { organisationSchema } from '@/lib/schema'
 import './globals.css'
 // Lenis' own rules: unpins html/body height, contains overscroll inside
 // [data-lenis-prevent] subtrees, and kills iframe pointer capture mid-scroll.
@@ -38,24 +39,22 @@ export const metadata = {
   // Lets every page declare relative canonicals and OG URLs.
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE.name} — Everything digital, under one roof.`,
-    template: `%s — ${SITE.name}`,
+    default: `Website & App Development Company in Bengaluru | ${SITE.name}`,
+    template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
-  alternates: { canonical: '/' },
+  /*
+    No `alternates.canonical` here. A canonical set on the layout is inherited
+    by every route that does not set its own, which declared any such page a
+    duplicate of the home page. Each page sets a self-referencing one instead,
+    via pageMetadata() in lib/metadata.js.
+  */
   openGraph: {
     type: 'website',
     siteName: SITE.name,
     locale: 'en_IN',
-    url: '/',
-    title: `${SITE.name} — Everything digital, under one roof.`,
-    description: SITE.description,
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${SITE.name} — Everything digital, under one roof.`,
-    description: SITE.description,
-  },
+  twitter: { card: 'summary_large_image' },
 }
 
 export default function RootLayout({ children }) {
@@ -118,6 +117,16 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
         className="bg-bg text-ink font-sans tracking-[-0.02em] antialiased overflow-x-hidden pb-[76px] md:pb-0"
       >
+        {/* The business itself — name, address, phone, hours, services.
+            Emitted on every route so any page Google lands on resolves to the
+            same local entity; page-level markup refers to it by @id. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organisationSchema()),
+          }}
+        />
+
         {/* Chrome lives here rather than in each page, so every route —
             home and the service pages — shares one nav and footer. */}
         <SmoothScroll>

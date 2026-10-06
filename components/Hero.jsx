@@ -26,10 +26,11 @@ const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false })
 
 gsap.registerPlugin(SplitText)
 
-// Each ticker item now links to its service page — six internal links out of
-// the hero, and the chips stop being decoration.
+// Each ticker item now links to its service page — an internal link out of
+// the hero for every service, and the chips stop being decoration.
 const TICKER_ITEMS = [
   { label: 'Website Development', href: '/services/website-development' },
+  { label: 'App Development', href: '/services/app-development' },
   { label: 'UI/UX Design', href: '/services/ui-ux-design' },
   { label: 'Digital Marketing', href: '/services/digital-marketing' },
   { label: 'Graphic Design', href: '/services/graphic-design' },
@@ -145,18 +146,30 @@ export default function Hero() {
           />
         </motion.div>
 
-        <h1
-          ref={headlineRef}
-          // 13vw resolved to 51px at 390px, which fit about seven characters
-          // to a line and pushed the sub-copy and both CTAs below the fold.
-          // 9.5vw lands at 37px and keeps the whole offer on one screen.
-          className="mb-5 max-w-[560px] text-[clamp(32px,9.5vw,44px)] leading-[1.06] font-semibold tracking-[-0.055em] md:text-[clamp(60px,8vw,72px)] md:leading-[1.03] md:tracking-[-0.07em] lg:text-[82px]"
-        >
-          Everything digital, under{' '}
-          <span className="font-serif font-semibold italic tracking-[-0.08em]">
-            one
+        {/*
+          One h1, two lines. The small first line is the phrase buyers search
+          for; the display line is the brand promise. Both sit inside the h1 so
+          the keyword carries heading weight, while the visual hierarchy stays
+          with the promise. The line-split animation targets only the display
+          span, so the keyword line is never split or masked.
+        */}
+        <h1 className="mb-5 flex flex-col items-center">
+          <span className="mb-4 text-[13px] leading-snug font-medium tracking-[-0.01em] text-muted md:text-[15px]">
+            Website &amp; app development company in Bengaluru
           </span>{' '}
-          roof.
+          <span
+            ref={headlineRef}
+            // 13vw resolved to 51px at 390px, which fit about seven characters
+            // to a line and pushed the sub-copy and both CTAs below the fold.
+            // 9.5vw lands at 37px and keeps the whole offer on one screen.
+            className="block max-w-[560px] text-[clamp(32px,9.5vw,44px)] leading-[1.06] font-semibold tracking-[-0.055em] md:text-[clamp(60px,8vw,72px)] md:leading-[1.03] md:tracking-[-0.07em] lg:text-[82px]"
+          >
+            Everything digital, under{' '}
+            <span className="font-serif font-semibold italic tracking-[-0.08em]">
+              one
+            </span>{' '}
+            roof.
+          </span>
         </h1>
 
         <motion.p

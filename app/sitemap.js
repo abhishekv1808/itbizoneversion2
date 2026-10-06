@@ -6,11 +6,13 @@ import { CASE_STUDY_SLUGS } from '@/lib/caseStudies'
 /**
  * Served at /sitemap.xml.
  *
- * ── No changefreq, no priority ────────────────────────────────────────────
- * Both were dropped. Google has stated it ignores them outright, so every
- * value was noise that still had to be kept plausible — and a hand-tuned
- * priority scale invites the belief that it is steering crawl budget, which
- * it is not. Bing treats them as hints at best.
+ * ── Priority, but no changefreq ───────────────────────────────────────────
+ * Priority is set on a coarse four-step scale (home 1.0, services 0.9, case
+ * studies 0.7, careers 0.3, everything else 0.5). Be clear about what it
+ * does: Google has stated it ignores both priority and changefreq, so this
+ * does NOT steer Google's crawl. Bing reads priority as a hint, and the scale
+ * records which pages matter most to the business. changefreq stays out — it
+ * would only be a guess.
  *
  * ── lastmod comes from git, or not at all ─────────────────────────────────
  * Every entry previously carried `new Date()`, so all thirteen URLs claimed
@@ -32,6 +34,7 @@ const SOURCES = {
   home: 'app/page.js',
   quote: 'app/quote/page.js',
   contact: 'app/contact/page.js',
+  careers: 'components/sections/Careers.jsx',
   privacy: 'app/privacy-policy/page.js',
   terms: 'app/terms-of-service/page.js',
   caseStudies: 'lib/caseStudies.js',
@@ -61,22 +64,25 @@ function lastCommit(file) {
 }
 
 export default function sitemap() {
-  const entry = (path, source) => ({
+  const entry = (path, source, priority = 0.5) => ({
     url: `${SITE_URL}${path}`,
     lastModified: lastCommit(source),
+    priority,
   })
 
+  // /thank-you is deliberately absent — it is noindex; see that page.
   return [
-    entry('/', SOURCES.home),
+    entry('/', SOURCES.home, 1.0),
+    ...SERVICE_SLUGS.map((slug) =>
+      entry(`/services/${slug}`, SOURCES.services, 0.9)
+    ),
+    ...CASE_STUDY_SLUGS.map((slug) =>
+      entry(`/case-studies/${slug}`, SOURCES.caseStudies, 0.7)
+    ),
     entry('/quote', SOURCES.quote),
     entry('/contact', SOURCES.contact),
+    entry('/careers', SOURCES.careers, 0.3),
     entry('/privacy-policy', SOURCES.privacy),
     entry('/terms-of-service', SOURCES.terms),
-    ...CASE_STUDY_SLUGS.map((slug) =>
-      entry(`/case-studies/${slug}`, SOURCES.caseStudies)
-    ),
-    ...SERVICE_SLUGS.map((slug) =>
-      entry(`/services/${slug}`, SOURCES.services)
-    ),
   ]
 }

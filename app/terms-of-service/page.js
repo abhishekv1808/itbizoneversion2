@@ -1,13 +1,14 @@
 import { ChevronRight } from 'lucide-react'
 import { Accent } from '@/components/ui/Type'
-import { SITE, SITE_URL } from '@/lib/site'
+import { FULL_ADDRESS, SITE, SITE_URL } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
 import { breadcrumbSchema } from '@/lib/schema'
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Terms of Service',
   description: `Terms and conditions governing the use of ${SITE.name}'s website and services. Last updated July 2026.`,
-  alternates: { canonical: '/terms-of-service' },
-}
+  path: '/terms-of-service',
+})
 
 const EFFECTIVE_DATE = '30 July 2026'
 
@@ -444,8 +445,7 @@ export default function TermsOfServicePage() {
                   </a>
                 </li>
                 <li>
-                  <strong>Address:</strong> {SITE.address.line1},{' '}
-                  {SITE.address.line2}, {SITE.address.city}
+                  <strong>Address:</strong> {FULL_ADDRESS}
                 </li>
               </ul>
             </div>

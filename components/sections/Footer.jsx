@@ -14,6 +14,7 @@ const COLUMNS = [
       // Google weighs how consistently a site links its own pages, so these
       // three lists agreeing is worth more than any one of them alone.
       { label: 'Website Development', href: '/services/website-development' },
+      { label: 'App Development', href: '/services/app-development' },
       { label: 'Graphic Design', href: '/services/graphic-design' },
       { label: 'Social Media Management', href: '/services/social-media-management' },
       { label: 'Digital Marketing', href: '/services/digital-marketing' },
@@ -29,7 +30,7 @@ const COLUMNS = [
       { label: 'Design gallery', hash: '#design' },
       { label: 'Clients', hash: '#clients' },
       { label: 'How we work', hash: '#process' },
-      { label: 'Careers', hash: '#careers' },
+      { label: 'Careers', href: '/careers' },
       { label: 'Pricing', href: '/quote' },
       { label: 'Contact', href: '/contact' },
     ],
@@ -43,7 +44,9 @@ const COLUMNS = [
 const LEGAL = [
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms of Service', href: '/terms-of-service' },
-  { label: 'Cookie Policy', href: '#' },
+  // Was href="#". Cookies are covered in section 7 of the privacy policy, so
+  // the link goes there rather than to a separate page restating it.
+  { label: 'Cookie Policy', href: '/privacy-policy#cookies' },
 ]
 
 export default function Footer() {

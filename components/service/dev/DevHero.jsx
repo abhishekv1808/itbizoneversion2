@@ -40,7 +40,7 @@ const TRUST = [
   { label: 'Modern stack', Icon: Boxes },
 ]
 
-export default function DevHero() {
+export default function DevHero({ service }) {
   const hostRef = useRef(null)
   const headlineRef = useRef(null)
   const reducedMotion = useReducedMotion()
@@ -104,31 +104,37 @@ export default function DevHero() {
       <HeroScene hostRef={hostRef} reducedMotion={reducedMotion} />
 
       <div className="relative z-20 flex w-full flex-col items-center">
-        <span
-          data-reveal="eyebrow"
-          className="inline-flex items-center gap-2 rounded-full border border-soft bg-bg/70 px-3.5 py-1.5 text-[13px] font-medium text-muted backdrop-blur-sm"
-        >
-          <span className="size-1.5 rounded-full bg-dot" />
-          Website Development
-        </span>
-
-        <h1
-          ref={headlineRef}
-          className="mt-7 max-w-[620px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.02] md:tracking-[-0.065em] md:text-[clamp(58px,7.2vw,72px)] lg:text-[80px]"
-        >
-          We build websites that{' '}
-          <span className="font-serif font-semibold italic tracking-[-0.07em]">
-            grow
+        {/*
+          The pill is part of the h1, so the heading opens with the searched
+          phrase — service plus city — while still looking like the eyebrow it
+          always was. The line-split animation targets only the display span.
+        */}
+        <h1 className="flex flex-col items-center">
+          <span
+            data-reveal="eyebrow"
+            className="inline-flex items-center gap-2 rounded-full border border-soft bg-bg/70 px-3.5 py-1.5 text-[13px] font-medium text-muted backdrop-blur-sm"
+          >
+            <span className="size-1.5 rounded-full bg-dot" />
+            {service.keyword}
           </span>{' '}
-          businesses.
+          <span
+            ref={headlineRef}
+            className="mt-7 block max-w-[620px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.02] md:tracking-[-0.065em] md:text-[clamp(58px,7.2vw,72px)] lg:text-[80px]"
+          >
+            We build websites that{' '}
+            <span className="font-serif font-semibold italic tracking-[-0.07em]">
+              grow
+            </span>{' '}
+            businesses.
+          </span>
         </h1>
 
         <p
           data-reveal="sub"
           className="mt-7 max-w-[500px] text-[14px] md:text-[17px] leading-[1.5] text-muted"
         >
-          Modern, high-performance websites designed to convert visitors into
-          customers while delivering an unforgettable digital experience.
+          Modern, high-performance websites for Bengaluru businesses, designed
+          to turn visitors into customers and built to be found on Google.
         </p>
 
         <div

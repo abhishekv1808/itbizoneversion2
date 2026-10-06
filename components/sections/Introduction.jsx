@@ -4,13 +4,15 @@ import Reveal from '@/components/ui/Reveal'
 import Counter from '@/components/ui/Counter'
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
 import { STUDIO_IMAGE } from '@/lib/images'
+import { SERVICE_SLUGS } from '@/lib/services'
 
 // `verified` marks a figure that comes from the MCA registration or the
 // service list. The rest are PLACEHOLDERS — swap them for real numbers
 // before this goes live.
 const STATS = [
   { to: 3, suffix: '', label: 'Years in business', verified: true },
-  { to: 6, suffix: '', label: 'Services under one roof', verified: true },
+  // Counted, not typed, so adding a service page updates it.
+  { to: SERVICE_SLUGS.length, suffix: '', label: 'Services under one roof', verified: true },
   { to: 150, suffix: '+', label: 'Projects delivered' },
   { to: 90, suffix: '%', label: 'Clients who stay on' },
 ]
@@ -31,9 +33,10 @@ export default function Introduction() {
 
         <Reveal delay={0.12} className="flex flex-col gap-5 md:col-span-5 md:pt-2">
           <Lede>
-            ITBIZONE Technologies is a Bengaluru IT consultancy building
-            websites, brands and campaigns for businesses that would rather
-            not manage four different vendors to get one thing launched.
+            ITBIZONE is a Bengaluru website and app development company
+            building websites, apps, brands and campaigns for businesses that
+            would rather not manage four different vendors to get one thing
+            launched.
           </Lede>
           <Lede>
             Because the site, the design and the marketing are made in the same

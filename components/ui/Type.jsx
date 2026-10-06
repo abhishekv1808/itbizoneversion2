@@ -18,9 +18,10 @@ export function Accent({ children }) {
   )
 }
 
-export function SectionTitle({ children, className = '' }) {
+/** `as` lets a section that is the whole page (careers) carry the h1. */
+export function SectionTitle({ children, className = '', as: Tag = 'h2' }) {
   return (
-    <h2
+    <Tag
       /*
         The mobile step was 8vw, which resolves to 31px at 390px wide and left
         headings running to three and four lines. 7vw with a 30px ceiling puts
@@ -30,7 +31,7 @@ export function SectionTitle({ children, className = '' }) {
       className={`text-[clamp(25px,7vw,30px)] leading-[1.08] font-semibold tracking-[-0.05em] md:text-[clamp(38px,5vw,48px)] md:leading-[1.06] md:tracking-[-0.055em] lg:text-[54px] ${className}`}
     >
       {children}
-    </h2>
+    </Tag>
   )
 }
 

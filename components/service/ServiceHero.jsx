@@ -24,9 +24,19 @@ export default function ServiceHero({ service }) {
           <span className="text-muted">{service.name}</span>
         </nav>
 
-        <h1 className="mt-8 max-w-[880px] text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.04] md:tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
-          {before} <Accent>{accent}</Accent>
-          {after}
+        {/*
+          The h1 leads with the searched phrase — service plus city — set
+          small, and keeps the display line as its visual weight. Same pattern
+          as the home hero.
+        */}
+        <h1 className="mt-8 max-w-[880px]">
+          <span className="block text-[13px] leading-snug font-medium tracking-[-0.01em] text-muted md:text-[15px]">
+            {service.keyword}
+          </span>{' '}
+          <span className="mt-4 block text-[clamp(30px,9vw,40px)] leading-[1.08] font-semibold tracking-[-0.05em] md:leading-[1.04] md:tracking-[-0.065em] md:text-[clamp(58px,7.5vw,74px)] lg:text-[84px]">
+            {before} <Accent>{accent}</Accent>
+            {after}
+          </span>
         </h1>
 
         <p className="mt-7 max-w-[560px] text-[14px] md:text-[17px] leading-[1.45] text-muted">

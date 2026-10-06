@@ -2,6 +2,7 @@ import { ArrowUpRight, Check, Phone } from 'lucide-react'
 import BookCall from '@/components/ui/BookCall'
 import { Accent } from '@/components/ui/Type'
 import { SITE, whatsappHref } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
 
 /**
  * Where every lead form lands after a successful submit.
@@ -19,10 +20,12 @@ import { SITE, whatsappHref } from '@/lib/site'
  * disallowed in robots.txt — a blocked page can never be crawled, so the
  * noindex on it would never be read.
  */
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Thanks — we have your enquiry',
+  description: `Your enquiry is with the ${SITE.name} team in Bengaluru.`,
+  path: '/thank-you',
   robots: { index: false, follow: true },
-}
+})
 
 const NEXT = [
   'We read it and check what you already have running.',

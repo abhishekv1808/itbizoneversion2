@@ -1,13 +1,14 @@
 import { ChevronRight } from 'lucide-react'
 import { Accent } from '@/components/ui/Type'
-import { SITE, SITE_URL } from '@/lib/site'
+import { FULL_ADDRESS, SITE } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
 import { breadcrumbSchema } from '@/lib/schema'
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Privacy Policy',
   description: `How ${SITE.name} collects, uses and protects the personal data you share with us. Last updated July 2026.`,
-  alternates: { canonical: '/privacy-policy' },
-}
+  path: '/privacy-policy',
+})
 
 const EFFECTIVE_DATE = '30 July 2026'
 
@@ -63,7 +64,7 @@ export default function PrivacyPolicyPage() {
                 {SITE.legalName} (&ldquo;{SITE.name}&rdquo;, &ldquo;we&rdquo;,
                 &ldquo;us&rdquo;, &ldquo;our&rdquo;) is a private limited
                 company registered in India. Our registered office is at{' '}
-                {SITE.address.line1}, {SITE.address.line2}, {SITE.address.city}.
+                {FULL_ADDRESS}.
               </p>
               <p>
                 For any privacy-related questions, you can reach us at{' '}
@@ -212,8 +213,8 @@ export default function PrivacyPolicyPage() {
               </p>
             </div>
 
-            {/* 7 */}
-            <div>
+            {/* 7 — the footer's "Cookie Policy" link lands here. */}
+            <div id="cookies" className="scroll-mt-24">
               <h2>7. Cookies</h2>
               <p>Our website uses the following categories of cookies:</p>
               <ul>
@@ -349,8 +350,7 @@ export default function PrivacyPolicyPage() {
                   </a>
                 </li>
                 <li>
-                  <strong>Address:</strong> {SITE.address.line1},{' '}
-                  {SITE.address.line2}, {SITE.address.city}
+                  <strong>Address:</strong> {FULL_ADDRESS}
                 </li>
               </ul>
             </div>

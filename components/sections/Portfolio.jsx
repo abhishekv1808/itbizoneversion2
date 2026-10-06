@@ -15,7 +15,7 @@ const PortfolioCanvas = dynamic(() => import('@/components/PortfolioCanvas'), {
   ssr: false,
 })
 import { Accent, Eyebrow, Lede, SectionTitle } from '@/components/ui/Type'
-import { PROJECTS } from '@/lib/projects'
+import { PROJECTS, projectAlt } from '@/lib/projects'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -207,7 +207,7 @@ export default function Portfolio() {
                   {project.screenshotVerified ? (
                     <Image
                       src={project.screenshot}
-                      alt={`${project.name} — ${project.sector} website built by ITBIZONE`}
+                      alt={projectAlt(project)}
                       fill
                       sizes="(max-width: 640px) 78vw, 58vw"
                       className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"

@@ -12,9 +12,10 @@ import { SITE } from '@/lib/site'
   The primary navigation, and the order matters beyond this menu.
 
   Google builds sitelinks largely from a site's primary nav and from how
-  consistently the same pages are linked across it. These six are listed in
-  the order we want them considered, and the footer's Services column and the
-  home page's service cards are kept in the same sequence.
+  consistently the same pages are linked across it. The routes below are
+  listed in the order we want them considered, and the footer's Services
+  column, the home page's service cards and navigationSchema() in
+  lib/schema.js are kept in the same sequence.
 
   Real routes first, on-page anchors after: an anchor is not a page Google can
   offer as a sitelink, so putting #work and #about above the service pages was
@@ -22,10 +23,11 @@ import { SITE } from '@/lib/site'
 
   E-commerce Development is deliberately not here. It is a real page and stays
   linked from the footer and the services grid, but every extra entry dilutes
-  the six that matter.
+  the ones that matter.
 */
 const LINKS = [
   { label: 'Website Development', href: '/services/website-development', route: true },
+  { label: 'App Development', href: '/services/app-development', route: true },
   { label: 'Graphic Design', href: '/services/graphic-design', route: true },
   { label: 'Social Media Management', href: '/services/social-media-management', route: true },
   { label: 'Digital Marketing', href: '/services/digital-marketing', route: true },

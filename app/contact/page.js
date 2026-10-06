@@ -3,26 +3,25 @@ import ContactForm from '@/components/contact/ContactForm'
 import BookCall from '@/components/ui/BookCall'
 import OfficeStatus from '@/components/ui/OfficeStatus'
 import { Accent } from '@/components/ui/Type'
-import { SITE, SOCIALS } from '@/lib/site'
-import { breadcrumbSchema, contactPointSchema } from '@/lib/schema'
+import { FULL_ADDRESS, SITE, SOCIALS } from '@/lib/site'
+import { pageMetadata } from '@/lib/metadata'
+import { breadcrumbSchema } from '@/lib/schema'
 
-const FULL_ADDRESS = `${SITE.address.line1}, ${SITE.address.line2}, ${SITE.address.city}`
 const MAP_SRC = `https://www.google.com/maps?q=${encodeURIComponent(FULL_ADDRESS)}&output=embed`
 
-export const metadata = {
+export const metadata = pageMetadata({
   // The root layout's title.template appends the brand; spelling it out
-  // here too produced "Contact — ITBIZONE — ITBIZONE".
+  // here too produced "Contact | ITBIZONE | ITBIZONE".
   title: 'Contact',
   // Kept under 160 characters so it does not truncate mid-sentence in results.
-  description: `Talk to ${SITE.name} about a website, brand or campaign. Bengaluru studio. Written quotations back within one working day.`,
-  alternates: { canonical: '/contact' },
-}
+  description: `Talk to ${SITE.name} about a website, app, brand or campaign. Bengaluru studio. Written quotations back within one working day.`,
+  path: '/contact',
+})
 
 export default function ContactPage() {
-  const schema = [
-    contactPointSchema(),
-    breadcrumbSchema([{ name: 'Contact', path: '/contact' }]),
-  ]
+  // The business node (address, phone, hours) comes from the root layout on
+  // every page, so only the breadcrumb is page-specific here.
+  const schema = [breadcrumbSchema([{ name: 'Contact', path: '/contact' }])]
 
   return (
     <>
